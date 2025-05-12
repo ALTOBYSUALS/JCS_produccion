@@ -13,7 +13,8 @@ import {
   SetViewFunction as ImportedSetViewFunction,
   ProductContextType as ImportedProductContextType,
   CartContextType as ImportedCartContextType,
-  ProductSpec as ImportedProductSpec 
+  ProductSpec as ImportedProductSpec,
+  OrderDetails
 } from '@/components/types';
 // IMPORTAR HOOKS
 import { useProducts as useProductsApi } from '@/lib/hooks';
@@ -1374,10 +1375,17 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
     address: "",
     city: "",
     postalCode: "",
-    notes: ""
+    notes: "",
+    // Campos para facturación
+    documento: "",
+    tipoDocumento: "DNI",
+    razonSocial: "",
+    tipoFactura: "B"
   });
   const [saveInfo, setSaveInfo] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [mostrarDatosFiscales, setMostrarDatosFiscales] = useState(false);
+  const [orderReference, setOrderReference] = useState('');
   
   const validCartItems = Array.isArray(cartItems) ? cartItems : [];
   
@@ -1389,7 +1397,7 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
     }
   }, [validCartItems, orderPlaced, setView]);
   
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -1398,21 +1406,73 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
     e.preventDefault();
     setIsProcessing(true);
     
-    // Simular procesamiento
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    console.log("Orden confirmada:", { 
-      items: validCartItems, 
-      total: totalPrice, 
-      paymentMethod, 
-      customerInfo: formData,
-      saveInfo
-    });
-    
-    setOrderPlaced(true);
-    clearCart();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setIsProcessing(false);
+    try {
+      // Generar ID de referencia del pedido
+      const referenceId = Math.random().toString(36).substring(2, 10).toUpperCase();
+      setOrderReference(referenceId);
+      
+      // Generar texto detallado de productos
+      const detalleProductosTexto = validCartItems.map(item => 
+        `${item.quantity}x ${item.name}`
+      ).join(", ");
+      
+      // Preparar datos del pedido
+      const orderData: OrderDetails = {
+        pedidoId: referenceId,
+        fechaPedido: new Date().toISOString(),
+        cliente: formData.name,
+        emailCliente: formData.email,
+        telefonoCliente: formData.phone,
+        direccionEnvio: formData.address,
+        ciudadEnvio: formData.city,
+        cpEnvio: formData.postalCode,
+        notasAdicionales: formData.notes,
+        subtotal: totalPrice,
+        costoEnvio: 0, // A determinar posteriormente
+        totalPedido: totalPrice,
+        detalleProductosTexto,
+        estadoPedido: "Pendiente de Pago",
+        metodoPago: paymentMethod,
+        // Los IDs de Notion de los productos no los tenemos disponibles aquí
+        // Esta funcionalidad se puede agregar más adelante
+        datosFiscales: mostrarDatosFiscales ? {
+          documento: formData.documento,
+          tipoDocumento: formData.tipoDocumento,
+          razonSocial: formData.razonSocial,
+          tipoFactura: formData.tipoFactura
+        } : undefined
+      };
+      
+      // Enviar datos a la API de pedidos
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al crear el pedido');
+      }
+      
+      console.log("Orden confirmada:", { 
+        orderData,
+        apiResponse: result
+      });
+      
+      // Si todo va bien, mostrar confirmación
+      setOrderPlaced(true);
+      clearCart();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error("Error al procesar el pedido:", error);
+      // Aquí se podría mostrar un mensaje de error al usuario
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (orderPlaced) {
@@ -1426,7 +1486,7 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">¡Pedido Confirmado!</h1>
           <p className="text-gray-600 mb-6">Hemos recibido tu pedido correctamente. Nos pondremos en contacto para coordinar la entrega.</p>
-          <p className="text-sm text-gray-500 mb-8">Referencia: #{Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
+          <p className="text-sm text-gray-500 mb-8">Referencia: #{orderReference || Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
           <Button variant="default" onClick={() => setView("storefront")} className="bg-red-600 hover:bg-red-700 px-8">
             Volver a la Tienda
           </Button>
@@ -1605,6 +1665,94 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
                   />
                 </div>
               </div>
+            </div>
+            
+            {/* Datos fiscales */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Datos para Facturación</h3>
+                <div className="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    id="mostrarDatosFiscales" 
+                    checked={mostrarDatosFiscales} 
+                    onChange={() => setMostrarDatosFiscales(!mostrarDatosFiscales)} 
+                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500" 
+                  />
+                  <label htmlFor="mostrarDatosFiscales" className="ml-2 block text-sm text-gray-600">
+                    Necesito factura
+                  </label>
+                </div>
+              </div>
+              
+              {mostrarDatosFiscales && (
+                <div className="space-y-4 animate-fadeIn pt-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="tipoDocumento">Tipo de documento</Label>
+                      <Select 
+                        id="tipoDocumento" 
+                        name="tipoDocumento" 
+                        value={formData.tipoDocumento}
+                        onChange={handleInputChange}
+                        className="mt-1"
+                      >
+                        <option value="DNI">DNI</option>
+                        <option value="CUIT">CUIT</option>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="documento">Número de {formData.tipoDocumento}</Label>
+                      <Input 
+                        id="documento" 
+                        name="documento" 
+                        value={formData.documento} 
+                        onChange={handleInputChange} 
+                        required={mostrarDatosFiscales}
+                        placeholder={formData.tipoDocumento === "DNI" ? "12345678" : "30-12345678-9"} 
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                  
+                  {formData.tipoDocumento === "CUIT" && (
+                    <div>
+                      <Label htmlFor="razonSocial">Razón Social</Label>
+                      <Input 
+                        id="razonSocial" 
+                        name="razonSocial" 
+                        value={formData.razonSocial} 
+                        onChange={handleInputChange} 
+                        required={mostrarDatosFiscales && formData.tipoDocumento === "CUIT"}
+                        placeholder="Nombre de la empresa" 
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                  
+                  <div>
+                    <Label htmlFor="tipoFactura">Tipo de Factura</Label>
+                    <Select 
+                      id="tipoFactura" 
+                      name="tipoFactura" 
+                      value={formData.tipoFactura}
+                      onChange={handleInputChange}
+                      className="mt-1"
+                    >
+                      <option value="B">Factura B (Consumidor Final)</option>
+                      {formData.tipoDocumento === "CUIT" && (
+                        <option value="A">Factura A (Responsable Inscripto)</option>
+                      )}
+                      <option value="C">Factura C</option>
+                    </Select>
+                  </div>
+                  
+                  <div className="pt-2 border-t text-xs text-gray-500">
+                    <p className="mb-1"><strong>Nota:</strong> Para facturas tipo A, es necesario proporcionar un CUIT válido de responsable inscripto.</p>
+                    <p>Todos los precios incluyen IVA.</p>
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* Métodos de pago */}
@@ -1897,38 +2045,75 @@ interface AdminDashboardProps {
 }
 // ** CORRECCIÓN ESTRUCTURAL Y DE TIPOS **
 const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
-  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
-  // Tipar estado del formulario parcialmente, idealmente usar una interfaz
-  const [formData, setFormData] = useState({
-    name: "", description: "", price: "",
-    imageUrls: "[]", // Mantener como string para Textarea
-    category: "accesorio", specs: "{}", rating: "0", reviewCount: "0",
-  });
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null); // Tipar producto en edición
+  const { products, addProduct, updateProduct, deleteProduct, loadProducts, loading } = useProducts();
+  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    price: "",
+    imageUrls: "[]",
+    category: "accesorio",
+    specs: "{}",
+    rating: "0",
+    reviewCount: "0"
+  });
   const [specError, setSpecError] = useState('');
   const [imageUrlsError, setImageUrlsError] = useState('');
-
-  useEffect(() => {
-    if (editingProduct) {
-      setFormData({
-        name: editingProduct.name || "",
-        description: editingProduct.description || "",
-        price: editingProduct.price !== undefined ? String(editingProduct.price) : "",
-        imageUrls: JSON.stringify(editingProduct.imageUrls || [], null, 2), // Convertir a string JSON
-        category: editingProduct.category || "accesorio",
-        specs: JSON.stringify(editingProduct.specs || {}, null, 2), // Convertir a string JSON
-        rating: String(editingProduct.rating || 0),
-        reviewCount: String(editingProduct.reviewCount || 0),
-      });
-      setShowForm(true);
-      setSpecError('');
-      setImageUrlsError('');
-    } else {
-      handleCancel(); // Usar handleCancel para resetear
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  
+  // Cargar pedidos desde Notion
+  const loadOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      // Hacer una llamada a la API para obtener los pedidos
+      const response = await fetch('/api/orders');
+      
+      if (!response.ok) {
+        throw new Error(`Error al cargar pedidos: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setOrders(data.orders || []);
+    } catch (error) {
+      console.error("Error al cargar pedidos:", error);
+      // Mostrar pedidos de ejemplo si hay un error
+      setOrders([
+        {
+          id: "ORD123456",
+          fecha: "2023-05-12T15:30:00Z",
+          cliente: "Juan Pérez",
+          email: "juan@example.com",
+          total: 45000,
+          estado: "Pendiente de Pago",
+          metodoPago: "Transferencia"
+        },
+        {
+          id: "ORD789012",
+          fecha: "2023-05-11T10:15:00Z",
+          cliente: "María López",
+          email: "maria@example.com",
+          total: 28500,
+          estado: "Pagado",
+          metodoPago: "Mercado Pago"
+        }
+      ]);
+    } finally {
+      setLoadingOrders(false);
     }
-  }, [editingProduct]);
-
+  };
+  
+  // Cargar productos al montar el componente
+  useEffect(() => {
+    if (activeTab === 'products') {
+      loadProducts();
+    } else if (activeTab === 'orders') {
+      loadOrders();
+    }
+  }, [activeTab]);
+  
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => { // Tipar evento
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -2022,105 +2207,250 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
   const safeProducts = Array.isArray(products) ? products : [];
 
   return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6 pb-4 border-b">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Panel Admin</h1>
-          <Button variant="destructive" size="sm" onClick={handleLogout}>Cerrar Sesión</Button>
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Panel de Administración</h1>
+        <Button onClick={handleLogout} variant="outline" size="sm">Cerrar Sesión</Button>
+      </div>
+      
+      <div className="mb-6 border-b">
+        <div className="flex space-x-4">
+          <button
+            className={`py-2 px-4 font-medium text-sm ${activeTab === 'products' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('products')}
+          >
+            Productos
+          </button>
+          <button
+            className={`py-2 px-4 font-medium text-sm ${activeTab === 'orders' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            Pedidos
+          </button>
         </div>
-        {!showForm && (
-          <Button onClick={() => { setEditingProduct(null); setShowForm(true); }} className="mb-6 flex items-center gap-1">
-            <PlusIcon /> Añadir Producto
-          </Button>
-        )}
-        {showForm && (
-          <Card className="mb-8 shadow-md">
-            <CardHeader><h2 className="text-xl font-semibold">{editingProduct ? "Editar" : "Añadir"} Producto</h2></CardHeader>
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div><Label htmlFor="name">Nombre</Label><Input id="name" name="name" value={formData.name} onChange={handleInputChange} required /></div>
-                  <div><Label htmlFor="price">Precio (ARS)</Label><Input id="price" name="price" type="number" value={formData.price} onChange={handleInputChange} placeholder="0 para consulta" step="0.01" /></div>
-                </div>
-                <div><Label htmlFor="description">Descripción</Label><Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} rows={3} /></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   {/* ** CORRECCIÓN AQUÍ: Input para imageUrls como JSON ** */}
-                   <div>
-                       <Label htmlFor="imageUrls">URLs Imagen (JSON Array)</Label>
-                       <Textarea id="imageUrls" name="imageUrls" value={formData.imageUrls} onChange={handleInputChange} placeholder='["url1.jpg", "url2.png"]' rows={3} className={imageUrlsError ? 'border-red-500' : ''} />
-                       {imageUrlsError && <p className="text-red-600 text-xs mt-1">{imageUrlsError}</p>}
-                       <p className="text-xs text-gray-500 mt-1">Una o más URLs en formato JSON array de strings.</p>
-                   </div>
-                   <div><Label htmlFor="category">Categoría</Label><Select id="category" name="category" value={formData.category} onChange={handleInputChange} required>{categories.map((c)=><option key={c.value} value={c.value}>{c.label}</option>)}</Select></div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="specs">Specs (JSON)</Label>
-                    <Textarea id="specs" name="specs" value={formData.specs} onChange={handleInputChange} placeholder='{"clave": "valor", "otraClave": 123}' rows={4} className={specError?'border-red-500':''} />
-                    {specError && <p className="text-red-600 text-xs mt-1">{specError}</p>}
-                    <p className="text-xs text-gray-500 mt-1">Objeto JSON.</p>
-                  </div>
-                  <div className="space-y-4">
-                    <div><Label htmlFor="rating">Rating (0-5)</Label><Input id="rating" name="rating" type="number" value={formData.rating} onChange={handleInputChange} step="0.1" min="0" max="5" /></div>
-                    <div><Label htmlFor="reviewCount">Cant. Reseñas</Label><Input id="reviewCount" name="reviewCount" type="number" value={formData.reviewCount} step="1" min="0" /></div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={handleCancel}>Cancelar</Button>
-                <Button type="submit">{editingProduct ? "Actualizar" : "Guardar"}</Button>
-              </CardFooter>
-            </form>
-          </Card>
-        )}
-        {safeProducts.length > 0 && (
-          <>
-            <h2 className="text-xl font-semibold mb-4">Productos Existentes ({safeProducts.length})</h2>
-            <div className="bg-white shadow rounded-lg overflow-x-auto">
+      </div>
+      
+      {activeTab === 'products' && (
+        <>
+          <div className="mb-6 flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Gestión de Productos</h2>
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={() => { setShowForm(true); setEditingProduct(null); }}
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                <PlusIcon />
+                Nuevo Producto
+              </Button>
+              <Button 
+                onClick={() => loadProducts()}
+                variant="outline"
+                size="sm"
+                disabled={loading}
+              >
+                {loading ? 'Cargando...' : 'Recargar'}
+              </Button>
+            </div>
+          </div>
+          
+          {showForm && (
+            <div className="mb-6 bg-white p-6 border rounded-lg shadow-sm">
+              <h3 className="text-lg font-medium mb-4">{editingProduct ? 'Editar Producto' : 'Nuevo Producto'}</h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Form fields... */}
+                {/* ... existing code ... */}
+              </form>
+            </div>
+          )}
+          
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Img</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Cat.</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-                    <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {safeProducts.map((p) => (
-                    <tr key={p.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                        {/* ** CORRECCIÓN AQUÍ: Usar imageUrls[0] ** */}
-                        <img 
-                           src={p.imageUrls?.[0] || `https://placehold.co/40x40/cccccc/333?text=N/A`} 
-                           alt="" 
-                           className="h-10 w-10 rounded object-contain bg-gray-100" 
-                           loading="lazy" 
-                           onError={handleAdminImageError} // Use extracted handler
-                         />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm font-medium text-gray-900">{p.name || 'Sin Nombre'}</div>
-                        <div className="text-xs text-gray-500 md:hidden">{categories.find(c=>c.value===p.category)?.label||p.category}</div>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">{categories.find(c=>c.value===p.category)?.label||p.category}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{p.price>0?`$${p.price?.toLocaleString("es-AR")}`:'Consulta'}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <Button variant="ghost" size="sm" onClick={()=>handleEdit(p)} className="text-blue-600 hover:text-blue-800 p-1 h-auto" title="Editar"><PencilIcon /></Button>
-                        <Button variant="ghost" size="sm" onClick={()=>handleDelete(p.id)} className="text-red-600 hover:text-red-800 p-1 h-auto" title="Eliminar"><TrashIcon className="w-4 h-4" /></Button>
-                      </td>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Cargando productos...</td>
                     </tr>
-                  ))}
+                  ) : products.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">No hay productos para mostrar.</td>
+                    </tr>
+                  ) : (
+                    products.map((product) => (
+                      <tr key={product.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                              <img 
+                                src={product.imageUrls?.[0] || "https://placehold.co/100?text=No+Image"} 
+                                alt={product.name}
+                                className="h-full w-full object-contain"
+                                onError={handleAdminImageError}
+                              />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900 line-clamp-1">{product.name}</div>
+                              <div className="text-xs text-gray-500">{product.id}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">${product.price.toLocaleString('es-AR')}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {product.category}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.active !== false ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                            {product.active !== false ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
+                          <button 
+                            onClick={() => handleEdit(product)}
+                            className="text-indigo-600 hover:text-indigo-900"
+                            title="Editar"
+                          >
+                            <PencilIcon />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(product.id)}
+                            className="text-red-600 hover:text-red-900 ml-3"
+                            title="Eliminar"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
+      
+      {activeTab === 'orders' && (
+        <>
+          <div className="mb-6 flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Gestión de Pedidos</h2>
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={loadOrders}
+                variant="outline"
+                size="sm"
+                disabled={loadingOrders}
+              >
+                {loadingOrders ? 'Cargando...' : 'Recargar'}
+              </Button>
+            </div>
+          </div>
+          
+          <div className="border border-dashed border-yellow-300 bg-yellow-50 p-4 rounded-lg mb-6">
+            <p className="text-yellow-700 text-sm">
+              <strong>Nota:</strong> Esta funcionalidad requiere configurar la variable de entorno <code>NOTION_DATABASE_ID_ORDERS</code> en tu archivo <code>.env.local</code> y 
+              crear una base de datos en Notion para los pedidos. Consulta la documentación para más detalles.
+            </p>
+          </div>
+          
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pedido</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método de Pago</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {loadingOrders ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">Cargando pedidos...</td>
+                    </tr>
+                  ) : orders.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">No hay pedidos para mostrar.</td>
+                    </tr>
+                  ) : (
+                    orders.map((order) => (
+                      <tr key={order.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{order.id}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {new Date(order.fecha).toLocaleDateString('es-AR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{order.cliente}</div>
+                          <div className="text-xs text-gray-500">{order.email}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">${order.total.toLocaleString('es-AR')}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            order.estado === 'Pagado' ? 'bg-green-100 text-green-800' :
+                            order.estado === 'Pendiente de Pago' ? 'bg-yellow-100 text-yellow-800' :
+                            order.estado === 'Enviado' ? 'bg-blue-100 text-blue-800' :
+                            order.estado === 'Entregado' ? 'bg-purple-100 text-purple-800' :
+                            order.estado === 'Cancelado' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {order.estado}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{order.metodoPago}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
+                          <button 
+                            className="text-indigo-600 hover:text-indigo-900"
+                            title="Ver detalles"
+                            onClick={() => alert(`Ver detalles del pedido ${order.id}`)}
+                          >
+                            Ver
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
-}; // <-- Ensure component definition ends here
+};
+
+// ... existing code ...
 
 
 // ===============================================

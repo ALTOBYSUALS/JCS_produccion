@@ -31,6 +31,32 @@ export interface CartItem {
   quantity: number;
 }
 
+// Interfaz para la gestión de pedidos en Notion
+export interface OrderDetails {
+  pedidoId: string;
+  fechaPedido: string; // ISO String e.g. new Date().toISOString()
+  cliente: string;
+  emailCliente: string;
+  telefonoCliente: string;
+  direccionEnvio: string;
+  ciudadEnvio: string;
+  cpEnvio: string;
+  notasAdicionales?: string;
+  subtotal: number;
+  costoEnvio: number;
+  totalPedido: number;
+  detalleProductosTexto: string; // Formato "2x Producto A, 1x Producto B"
+  estadoPedido: string; // "Pendiente de Pago", "Pagado", etc.
+  metodoPago: string; // "Efectivo", "Transferencia", "Mercado Pago", etc.
+  productoIds?: string[]; // IDs de Notion de los productos en el pedido
+  datosFiscales?: {
+    documento: string; // DNI o CUIT
+    tipoDocumento: string; // "DNI" o "CUIT"
+    razonSocial?: string; // Para facturas a empresas
+    tipoFactura: string; // "A", "B", "C"
+  };
+}
+
 // Tipos para View y Contexto de setView
 export type ViewName = 'storefront' | 'neumaticos' | 'llantas' | 'accesorios' | 'servicios' | 'contacto' | 'shopByBrand' | 'productDetail' | 'cart' | 'checkout' | 'adminLogin' | 'adminDashboard' |
                 'llantas_deportivas' | 'llantas_chapa' | 'llantas_r14' | 'llantas_r15' | 'llantas_r17' |

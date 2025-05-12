@@ -1,5 +1,5 @@
 import { Client } from "@notionhq/client";
-import { Product } from "@/components/types"; // Vamos a crear este archivo de tipos a continuación
+import { Product, OrderDetails } from "@/components/types"; // Vamos a crear este archivo de tipos a continuación
 
 // Inicializar cliente Notion
 const notion = new Client({
@@ -9,6 +9,10 @@ const notion = new Client({
 // Asegurarnos de que el ID no tenga comillas extras
 const databaseId = process.env.NOTION_DATABASE_ID_PRODUCTS ? 
   process.env.NOTION_DATABASE_ID_PRODUCTS.replace(/"/g, '') : undefined;
+
+// Base de datos de pedidos
+const ordersDatabaseId = process.env.NOTION_DATABASE_ID_ORDERS ? 
+  process.env.NOTION_DATABASE_ID_ORDERS.replace(/"/g, '') : undefined;
 
 /**
  * Convierte un objeto de Notion a nuestro modelo de Producto
@@ -373,5 +377,221 @@ export const fetchAllPages = async (includeInactive = false): Promise<Product[]>
   } catch (error) {
     console.error("Error fetching all products from Notion:", error);
     return allProducts; // Devolvemos los productos que hayamos conseguido obtener
+  }
+};
+
+/**
+ * Crea un nuevo pedido en Notion
+ */
+export const createOrderInNotion = async (orderDetails: OrderDetails): Promise<any | null> => {
+  if (!ordersDatabaseId) {
+    console.error("NOTION_DATABASE_ID_ORDERS no está definido");
+    return null;
+  }
+
+  try {
+    // Formatear la propiedad relacionada para productos
+    let relationProperty = {};
+    if (orderDetails.productoIds && orderDetails.productoIds.length > 0) {
+      relationProperty = {
+        ProductosRelacionados: {
+          relation: orderDetails.productoIds.map(id => ({
+            id: id
+          }))
+        }
+      };
+    }
+
+    const response = await notion.pages.create({
+      parent: {
+        database_id: ordersDatabaseId.trim(),
+      },
+      properties: {
+        pedidoId: {
+          title: [
+            {
+              text: {
+                content: orderDetails.pedidoId
+              }
+            }
+          ]
+        },
+        fechaPedido: {
+          date: {
+            start: orderDetails.fechaPedido
+          }
+        },
+        cliente: {
+          rich_text: [
+            {
+              text: {
+                content: orderDetails.cliente
+              }
+            }
+          ]
+        },
+        emailCliente: {
+          email: orderDetails.emailCliente
+        },
+        telefonoCliente: {
+          phone_number: orderDetails.telefonoCliente
+        },
+        direccionEnvio: {
+          rich_text: [
+            {
+              text: {
+                content: orderDetails.direccionEnvio
+              }
+            }
+          ]
+        },
+        ciudadEnvio: {
+          rich_text: [
+            {
+              text: {
+                content: orderDetails.ciudadEnvio
+              }
+            }
+          ]
+        },
+        cpEnvio: {
+          rich_text: [
+            {
+              text: {
+                content: orderDetails.cpEnvio
+              }
+            }
+          ]
+        },
+        notasAdicionales: {
+          rich_text: [
+            {
+              text: {
+                content: orderDetails.notasAdicionales || ""
+              }
+            }
+          ]
+        },
+        subtotal: {
+          number: orderDetails.subtotal
+        },
+        costoEnvio: {
+          number: orderDetails.costoEnvio
+        },
+        detalleProductosTexto: {
+          rich_text: [
+            {
+              text: {
+                content: orderDetails.detalleProductosTexto
+              }
+            }
+          ]
+        },
+        estadoPedido: {
+          select: {
+            name: orderDetails.estadoPedido
+          }
+        },
+        metodoPago: {
+          select: {
+            name: orderDetails.metodoPago
+          }
+        },
+        ...relationProperty
+      }
+    });
+
+    console.log("Pedido creado en Notion:", response.id);
+    return response;
+  } catch (error) {
+    console.error("Error al crear pedido en Notion:", error);
+    return null;
+  }
+};
+
+/**
+ * Convierte un objeto de Notion a nuestro modelo de Pedido
+ */
+export const convertNotionPageToOrder = (page: any): any => {
+  const properties = page.properties;
+  
+  // Extraer propiedades del objeto de Notion
+  const id = page.id;
+  const pedidoId = properties.pedidoId?.title?.[0]?.text?.content || "";
+  const fechaPedido = properties.fechaPedido?.date?.start || "";
+  
+  // Cliente y detalles de contacto
+  const cliente = properties.cliente?.rich_text?.[0]?.text?.content || "";
+  const emailCliente = properties.emailCliente?.email || "";
+  const telefonoCliente = properties.telefonoCliente?.phone_number || "";
+  
+  // Dirección de entrega
+  const direccionEnvio = properties.direccionEnvio?.rich_text?.[0]?.text?.content || "";
+  const ciudadEnvio = properties.ciudadEnvio?.rich_text?.[0]?.text?.content || "";
+  const cpEnvio = properties.cpEnvio?.rich_text?.[0]?.text?.content || "";
+  const notasAdicionales = properties.notasAdicionales?.rich_text?.[0]?.text?.content || "";
+  
+  // Detalles financieros
+  const subtotal = properties.subtotal?.number || 0;
+  const costoEnvio = properties.costoEnvio?.number || 0;
+  const totalPedido = properties.totalPedido?.formula?.number || subtotal + costoEnvio;
+  
+  // Otros detalles
+  const detalleProductosTexto = properties.detalleProductosTexto?.rich_text?.[0]?.text?.content || "";
+  const estadoPedido = properties.estadoPedido?.select?.name || "Pendiente de Pago";
+  const metodoPago = properties.metodoPago?.select?.name || "";
+  
+  // Relaciones (productos relacionados)
+  const productosRelacionados = properties.ProductosRelacionados?.relation || [];
+  const productoIds = productosRelacionados.map((relation: any) => relation.id);
+  
+  return {
+    id,
+    pedidoId,
+    fechaPedido,
+    cliente,
+    emailCliente,
+    telefonoCliente,
+    direccionEnvio,
+    ciudadEnvio,
+    cpEnvio,
+    notasAdicionales,
+    subtotal,
+    costoEnvio,
+    totalPedido,
+    detalleProductosTexto,
+    estadoPedido,
+    metodoPago,
+    productoIds
+  };
+};
+
+/**
+ * Obtiene todos los pedidos desde Notion
+ */
+export const getAllOrders = async (): Promise<any[]> => {
+  if (!ordersDatabaseId) {
+    console.error("NOTION_DATABASE_ID_ORDERS no está definido");
+    return [];
+  }
+
+  try {
+    const response = await notion.databases.query({
+      database_id: ordersDatabaseId.trim(),
+      sorts: [
+        {
+          property: "fechaPedido",
+          direction: "descending",
+        },
+      ],
+      page_size: 100,
+    });
+
+    const orders = response.results.map(convertNotionPageToOrder);
+    
+    return orders;
+  } catch (error) {
+    console.error("Error fetching orders from Notion:", error);
+    return [];
   }
 }; 
