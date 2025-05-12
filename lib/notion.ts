@@ -6,7 +6,9 @@ const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
 
-const databaseId = process.env.NOTION_DATABASE_ID_PRODUCTS;
+// Asegurarnos de que el ID no tenga comillas extras
+const databaseId = process.env.NOTION_DATABASE_ID_PRODUCTS ? 
+  process.env.NOTION_DATABASE_ID_PRODUCTS.replace(/"/g, '') : undefined;
 
 /**
  * Convierte un objeto de Notion a nuestro modelo de Producto
@@ -75,7 +77,7 @@ export const getActiveProducts = async (): Promise<Product[]> => {
 
   try {
     const response = await notion.databases.query({
-      database_id: databaseId,
+      database_id: databaseId.trim(),
       filter: {
         property: "Activo",
         checkbox: {
@@ -111,7 +113,7 @@ export const getAllProducts = async (): Promise<Product[]> => {
 
   try {
     const response = await notion.databases.query({
-      database_id: databaseId,
+      database_id: databaseId.trim(),
       sorts: [
         {
           property: "Name",
@@ -223,7 +225,7 @@ export const createProduct = async (product: Omit<Product, 'id'>): Promise<Produ
   try {
     const response = await notion.pages.create({
       parent: {
-        database_id: databaseId,
+        database_id: databaseId.trim(),
       },
       properties: {
         Name: {
@@ -328,7 +330,7 @@ export const fetchAllPages = async (includeInactive = false): Promise<Product[]>
     while (hasMore) {
       // Preparar la consulta base
       const queryParams: any = {
-        database_id: databaseId,
+        database_id: databaseId.trim(),
         sorts: [
           {
             property: "Name",
