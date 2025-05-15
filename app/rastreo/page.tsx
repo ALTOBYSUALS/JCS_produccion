@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function TrackingPage() {
+// Componente que contiene la lógica y el JSX de la página de rastreo
+function RastreoContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const [orderStatus, setOrderStatus] = useState<any>(null);
@@ -70,6 +71,14 @@ export default function TrackingPage() {
     );
   }
   
+  if (!orderStatus) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p className="text-gray-600">No se pudo cargar la información del pedido.</p>
+      </div>
+    );
+  }
+  
   // Estados posibles del pedido
   const steps = [
     'Pendiente de Pago',
@@ -85,7 +94,9 @@ export default function TrackingPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold mb-2 text-center text-gray-800">Seguimiento de Pedido #{orderStatus.pedidoId}</h1>
-        <p className="text-center text-gray-500 mb-8">Fecha: {orderStatus.fechaCreacion}</p>
+        <p className="text-center text-gray-500 mb-8">
+          Fecha: {orderStatus.fechaCreacion ? new Date(orderStatus.fechaCreacion).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Fecha no disponible'}
+        </p>
         
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Cabecera */}
@@ -179,5 +190,14 @@ export default function TrackingPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// Componente exportado por defecto que envuelve RastreoContent con Suspense
+export default function TrackingPage() {
+  return (
+    <Suspense fallback={<div>Cargando seguimiento...</div>}>
+      <RastreoContent />
+    </Suspense>
   );
 } 
