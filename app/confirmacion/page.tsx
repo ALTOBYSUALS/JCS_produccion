@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, XCircle, Clock } from 'lucide-react'
 
-export default function ConfirmacionPage() {
+function ConfirmacionContent() {
   const searchParams = useSearchParams()
   const status = searchParams.get('status')
   const [orderInfo, setOrderInfo] = useState<any>(null)
@@ -74,5 +74,13 @@ export default function ConfirmacionPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ConfirmacionPage() {
+  return (
+    <Suspense fallback={<div>Cargando confirmación...</div>}>
+      <ConfirmacionContent />
+    </Suspense>
   )
 } 
