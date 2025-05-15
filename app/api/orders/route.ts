@@ -73,29 +73,64 @@ export async function POST(req: Request) {
       );
     }
     
-    // Crear el pedido en Notion
-    const result = await createOrderInNotion(orderData);
+    console.log(`API Orders - Creando pedido: ${orderData.pedidoId} (Cliente: ${orderData.cliente})`);
+    console.log(`API Orders - Datos del pedido: ${JSON.stringify({
+      ...orderData,
+      // Omitir datos sensibles o extensos
+      notasAdicionales: orderData.notasAdicionales ? 'presente' : 'no presente',
+      estadoHistorial: orderData.estadoHistorial ? `${orderData.estadoHistorial.length} registros` : 'no presente'
+    })}`);
     
-    if (!result) {
+    // Crear el pedido en Notion
+    try {
+      const result = await createOrderInNotion(orderData);
+      
+      if (!result) {
+        console.error('API Orders - Error al crear pedido en Notion: resultado nulo');
+        return NextResponse.json(
+          { error: 'Error al crear el pedido en Notion: no se pudo crear la entrada' },
+          { status: 500 }
+        );
+      }
+      
+      console.log(`API Orders - Pedido creado exitosamente en Notion: ${result.id}`);
+      
+      // Devolver respuesta exitosa con los datos del pedido creado
       return NextResponse.json(
-        { error: 'Error al crear el pedido en Notion' },
+        { 
+          message: 'Pedido creado correctamente', 
+          order: result 
+        },
+        { status: 201 }
+      );
+    } catch (notionError) {
+      console.error('API Orders - Error específico al crear en Notion:', notionError);
+      
+      // Proporcionar un mensaje de error más descriptivo
+      let errorMessage = 'Error al crear el pedido en Notion';
+      if (notionError instanceof Error) {
+        errorMessage += `: ${notionError.message}`;
+        
+        // Detectar errores específicos de campos faltantes
+        if (notionError.message.includes('cliente') || notionError.message.includes('clientes')) {
+          errorMessage = 'Error al crear el pedido en Notion: campo cliente/clientes faltante o inválido';
+          console.error('API Orders - Error: problema con campo cliente/clientes. Verificar la estructura de la base de datos.');
+        } else if (notionError.message.includes('property') || notionError.message.includes('properties')) {
+          errorMessage = 'Error al crear el pedido en Notion: uno o más campos no existen en la base de datos';
+          console.error('API Orders - Error: campos no compatibles. Verificar la estructura de la base de datos.');
+        }
+      }
+      
+      return NextResponse.json(
+        { error: errorMessage },
         { status: 500 }
       );
     }
     
-    // Devolver respuesta exitosa con los datos del pedido creado
-    return NextResponse.json(
-      { 
-        message: 'Pedido creado correctamente', 
-        order: result 
-      },
-      { status: 201 }
-    );
-    
   } catch (error) {
-    console.error('Error en la API de pedidos:', error);
+    console.error('API Orders - Error general al procesar pedido:', error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: 'Error interno del servidor al procesar el pedido' },
       { status: 500 }
     );
   }

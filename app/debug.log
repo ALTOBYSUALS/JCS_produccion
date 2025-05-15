@@ -1,0 +1,2 @@
+Comprobando estado de la integración Mercado Pago
+{"message":"neither a public key or caller id were provided","error":"unauthorized_scopes","status":401,"cause":[]}

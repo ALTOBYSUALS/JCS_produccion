@@ -22,7 +22,7 @@ export default function MobileNavigation({
     { label: "Accesorios", view: "accesorios" },
     { label: "Servicios", view: "servicios" },
     { label: "Contacto", view: "contacto" },
-    { label: "Marcas", view: "shopByBrand" },
+    // { label: "Marcas", view: "shopByBrand" }, // Temporalmente oculto
   ]
 
   const handleNavigation = (view: string) => {
@@ -106,42 +106,25 @@ export default function MobileNavigation({
               <button
                 key={item.view}
                 onClick={() => handleNavigation(item.view)}
-                className="flex items-center w-full px-6 py-3.5 text-left text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors font-medium text-sm uppercase tracking-wide"
+                className="flex items-center w-full px-6 py-3.5 text-left text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors font-medium text-sm uppercase tracking-wide font-[var(--font-uncial-antiqua)]"
               >
                 {item.label}
               </button>
             ))}
           </nav>
-
-          <div className="border-t border-gray-100 mt-2 pt-4 px-6 space-y-4">
-            <button
-              onClick={() => handleNavigation("adminLogin")}
-              className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors py-2"
-            >
-              <User className="h-5 w-5" />
-              <span className="text-sm">Acceso Admin</span>
-            </button>
-
-            <a
-              href="tel:+123456789"
-              className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors py-2"
-            >
-              <Phone className="h-5 w-5" />
-              <span className="text-sm">Llamar ahora</span>
-            </a>
-          </div>
         </div>
 
-        {/* Pie del menú */}
+        {/* Footer del menú */}
         <div className="p-4 border-t border-gray-100">
+          <div className="flex items-center space-x-2 mb-4">
+            <Phone className="h-5 w-5 text-red-600" />
+            <a href="tel:+541146510507" className="text-sm font-medium">+54 11 4651-0507</a>
+          </div>
           <Button
-            onClick={() => {
-              setIsMenuOpen(false)
-              toggleCart()
-            }}
-            className="w-full"
+            onClick={() => handleNavigation("contacto")}
+            className="w-full bg-red-600 hover:bg-red-700 text-white"
           >
-            Ver Carrito {totalItems > 0 && `(${totalItems})`}
+            Contáctanos
           </Button>
         </div>
       </div>

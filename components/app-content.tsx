@@ -21,6 +21,7 @@ import { useProducts as useProductsApi } from '@/lib/hooks';
 // Añadir esta importación:
 import { NextResponse } from 'next/server';
 import { createProduct, updateProduct, deleteProduct } from '@/lib/notion';
+import { CheckoutForm } from "./checkout-form";
 
 // --- ELIMINAR INTERFACES DUPLICADAS Y DEJAR SOLO LOS COMENTARIOS ---
 // --- INTERFACES PRINCIPALES ---
@@ -52,6 +53,7 @@ interface Product {
   specs: ProductSpec;
   rating?: number;
   reviewCount?: number;
+  active?: boolean; // Añadir esta propiedad como opcional
 }
 
 interface CartItem {
@@ -81,6 +83,9 @@ type SetViewFunction = (view: ViewName, context?: SetViewContext) => void;
 // --- IMPORTACIONES ---
 // Placeholders si no existen los archivos
 const TestimonialsSection = () => ( <div className="container mx-auto my-12 p-6 bg-gray-100 rounded-lg text-center"><h2 className="text-2xl font-semibold mb-4">Testimonios</h2><div className="grid md:grid-cols-3 gap-6"><div className="bg-white p-4 rounded shadow"><p className="italic">"Placeholder Testimonio 1..."</p></div><div className="bg-white p-4 rounded shadow"><p className="italic">"Placeholder Testimonio 2..."</p></div><div className="bg-white p-4 rounded shadow"><p className="italic">"Placeholder Testimonio 3..."</p></div></div></div> )
+// Importar el componente WhyChooseUs
+import WhyChooseUs from './WhyChooseUs';
+
 // ACTUALIZANDO fetchProductsFromCSV para usar API
 const fetchProductsFromCSV = async () => { 
   try {
@@ -425,7 +430,19 @@ const useCart = (): CartContextType => { const ctx = useContext(CartContext); if
 // --- SVG Icons ---
 // Tipar props de iconos si reciben props adicionales
 type SvgProps = React.SVGProps<SVGSVGElement>;
-const CartIcon: FC<SvgProps>=(props)=>(<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>);
+const CartIcon: FC<SvgProps>=(props)=>(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" {...props}>
+  {/* Cofre/baúl de tesoro medieval */}
+  <path d="M5 6.5C5 5.67 5.67 5 6.5 5h11c.83 0 1.5.67 1.5 1.5V8h-14V6.5z" strokeWidth={1.5} />
+  <path d="M4 8h16v10a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" strokeWidth={1.5} />
+  <path d="M8 8v2" strokeWidth={1.5} />
+  <path d="M16 8v2" strokeWidth={1.5} />
+  <path d="M4 12h16" strokeWidth={1.5} />
+  <path d="M12 12v4" strokeWidth={1.5} />
+  <path d="M9 14.5h6" strokeWidth={1.5} />
+  {/* Detalles ornamentales */}
+  <path d="M7.5 17.5a.5.5 0 100-1 .5.5 0 000 1z" fill="currentColor" />
+  <path d="M16.5 17.5a.5.5 0 100-1 .5.5 0 000 1z" fill="currentColor" />
+</svg>);
 const UserIcon: FC<SvgProps>=(props)=>(<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>);
 const TrashIcon: FC<SvgProps>=(props)=>(<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>);
 const PhoneIcon: FC<SvgProps>=(props)=>(<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 6.75z" /></svg>);
@@ -442,6 +459,13 @@ interface StarIconProps { filled?: boolean; className?: string; }
 const StarIcon: FC<StarIconProps>=({filled=false,className=""})=>(<svg className={`inline-block w-5 h-5 ${filled?"text-yellow-400 fill-current":"text-gray-300"} ${className}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>);
 const CogIcon=()=>(<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m18 0h-1.5m-15.036-7.126L4.97 4.97M19.03 19.03l-1.06-1.06M4.97 19.03l1.06-1.06M19.03 4.97l-1.06 1.06M12 2.25v1.5m0 16.5v1.5m-7.126-1.5L4.97 19.03m14.06-14.06l-1.06 1.06M12 6.75a5.25 5.25 0 110 10.5 5.25 5.25 0 010-10.5zM15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>);const TireIcon=()=>(<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15.91 15.91a6 6 0 11-7.82 0 6 6 0 017.82 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 17.25v-.001M12 6.75v.001m0 3.75v.001m0 3.75v.001M17.25 12h-.001M6.75 12h.001m3.75 0h.001m3.75 0h.001" /></svg>);const Bars3Icon=()=>(<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>);
 
+// Indicador de Carga Genérico
+const GenericLoadingSpinner = ({ text = "Cargando..." }: { text?: string }) => (
+  <div className="flex flex-col items-center justify-center py-10 my-6">
+    <div className="w-12 h-12 border-4 border-red-600 border-solid border-t-transparent rounded-full animate-spin mb-4"></div>
+    <p className="text-red-700 text-lg" style={{ fontFamily: "var(--font-uncial-antiqua)" }}>{text}</p>
+  </div>
+);
 
 // --- UI Components ---
 // Definir tipos para props de Card, CardHeader, CardContent, CardFooter
@@ -617,7 +641,9 @@ interface ProductGridMobileProps {
     setView: SetViewFunction;
     addToCart: (product: Product) => void; // Pasar addToCart tipado
 }
-const ProductGridMobile: FC<ProductGridMobileProps> = ({ products = [], categoryLabel, onProductSelect, setView, addToCart }) => ( <div className="p-2"><div className="flex justify-between items-center mb-3"><Button onClick={() => setView("storefront")} variant="ghost" size="sm" className="text-gray-600 pl-0"><ArrowLeftIcon /> Volver</Button><h2 className="font-bold text-lg text-center flex-grow">{categoryLabel}</h2><div className="w-10"></div></div>{categoryLabel === "Neumáticos" && !categoryLabel.includes("Resultados") && !(brandsData && brandsData.some(b => categoryLabel.includes(b.name))) && ( <div className="text-center mb-4"><Button variant="outline" size="sm" onClick={() => setView('shopByBrand')}>Ver por Marca</Button></div> )}{products.length === 0 ? ( <p className="text-center text-gray-500 py-8">No se encontraron productos.</p> ) : ( <div className="grid grid-cols-2 gap-3">{products.map((p) => ( <ProductCardMobile key={p?.id || Math.random()} product={p} onProductSelect={onProductSelect} /> ))}</div> )}</div> ) // Removido addToCart de props pasadas a ProductCardMobile
+const ProductGridMobile: FC<ProductGridMobileProps> = ({ products = [], categoryLabel, onProductSelect, setView, addToCart }) => ( <div className="p-2"><div className="flex justify-between items-center mb-3"><Button onClick={() => setView("storefront")} variant="ghost" size="sm" className="text-gray-600 pl-0"><ArrowLeftIcon /> Volver</Button><h2 className="font-bold text-lg text-center flex-grow">{categoryLabel}</h2><div className="w-10"></div></div>{/* Botón "Ver por Marca" temporalmente oculto 
+{categoryLabel === "Neumáticos" && !categoryLabel.includes("Resultados") && !(brandsData && brandsData.some(b => categoryLabel.includes(b.name))) && ( <div className="text-center mb-4"><Button variant="outline" size="sm" onClick={() => setView('shopByBrand')}>Ver por Marca</Button></div> )}
+*/}{products.length === 0 ? ( <p className="text-center text-gray-500 py-8">No se encontraron productos.</p> ) : ( <div className="grid grid-cols-2 gap-3">{products.map((p) => ( <ProductCardMobile key={p?.id || Math.random()} product={p} onProductSelect={onProductSelect} /> ))}</div> )}</div> ) // Removido addToCart de props pasadas a ProductCardMobile
 
 
 // --- Mobile Navigation ---
@@ -683,8 +709,6 @@ interface HeaderProps {
 }
 function Header({ setView, toggleCart }: HeaderProps) {
   const { totalItems } = useCart();
-  const [openMenu, setOpenMenu] = useState<ViewName | null>(null); // Tipar estado con ViewName | null
-  const menuTimerRef = useRef<NodeJS.Timeout | null>(null); // Tipar ref del timer
   const [isMounted, setIsMounted] = useState(false);
   
   // Sólo mostrar badge después de la hidratación
@@ -692,66 +716,23 @@ function Header({ setView, toggleCart }: HeaderProps) {
     setIsMounted(true);
   }, []);
 
-  const navItems: { label: string; view: ViewName; megaMenu?: MegaMenuColumn[] | null }[] = [
-    { label: "Neumáticos", view: "neumaticos", megaMenu: null },
-    { label: "Llantas", view: "llantas", megaMenu: [
-      { title: "Tipos", links: [
-        { label: "Ver Todas", view: "llantas" },
-        { label: "Deportivas", view: "llantas_deportivas" },
-        { label: "Chapa", view: "llantas_chapa" },
-      ]},
-      { title: "Rodado", links: [
-        { label: 'R14"', view: "llantas_r14" },
-        { label: 'R15"', view: "llantas_r15" },
-        { label: 'R17"', view: "llantas_r17" },
-      ]},
-    ]},
-    { label: "Accesorios", view: "accesorios", megaMenu: null },
-    { label: "Servicios", view: "servicios", megaMenu: [
-      { title: "Principales", links: [
-        { label: "Ver Todos", view: "servicios" },
-        { label: "Alineación", view: "servicio_alineacion" },
-        { label: "Reparación Llantas", view: "servicio_reparacion" },
-        { label: "Cambio Aceite", view: "servicio_aceite" },
-      ]},
-      { title: "Otros", links: [
-        { label: "Frenos", view: "servicio_frenos" },
-        { label: "Suspensión", view: "servicio_suspension" },
-        { label: "Mecánica Ligera", view: "servicio_mecanica" },
-      ]},
-    ]},
-    { label: "Contacto", view: "contacto", megaMenu: null },
-    { label: "Marcas", view: "shopByBrand", megaMenu: null },
+  const navItems: { label: string; view: ViewName }[] = [
+    { label: "Neumáticos", view: "neumaticos" },
+    { label: "Llantas", view: "llantas" },
+    { label: "Accesorios", view: "accesorios" },
+    { label: "Servicios", view: "servicios" },
+    { label: "Contacto", view: "contacto" },
+    // { label: "Marcas", view: "shopByBrand" }, // Temporalmente oculto
   ];
-
-  const handleMouseEnter = (view: ViewName) => { // Tipar parámetro view
-    if (menuTimerRef.current) clearTimeout(menuTimerRef.current);
-    setOpenMenu(view);
-  };
-
-  const handleMouseLeave = (isLeavingMenu = false) => {
-    if (menuTimerRef.current) clearTimeout(menuTimerRef.current); // Limpiar timer anterior si existe
-    menuTimerRef.current = setTimeout(() => {
-      setOpenMenu(null);
-    }, isLeavingMenu ? 300 : 150);
-  };
-
-  const handleMenuInteraction = (action = "enter") => {
-    if (action === "enter") {
-      if (menuTimerRef.current) clearTimeout(menuTimerRef.current);
-    } else {
-      handleMouseLeave(true);
-    }
-  };
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
-      {/* <<< REEMPLAZAR ESTE DIV >>> */}
+      {/* Ticker digital en la parte superior */}
       <DigitalTicker />
       
-      {/* Barra de navegación principal */}
-      <div className="container mx-auto px-4 lg:px-6">
-        <nav className="h-16 md:h-20 hidden lg:flex items-center justify-between">
+      {/* Barra de navegación principal - altura reducida */}
+      <div className="container mx-auto px-4 lg:px-6 w-[87%]">
+        <nav className="h-14 md:h-[70px] hidden lg:flex items-center justify-between">
           {/* Logo */}
           <div 
             className="flex-shrink-0 cursor-pointer" 
@@ -760,67 +741,38 @@ function Header({ setView, toggleCart }: HeaderProps) {
             <img 
               src="https://res.cloudinary.com/dt5pkdr0k/image/upload/v1745035390/image_1_yd8doa.png" 
               alt="Logo JCS El Guardián" 
-              className="h-9 w-auto" 
+              className="h-8 w-auto" 
             />
           </div>
           
-          {/* Enlaces de navegación */}
-          <div className="flex items-center space-x-8">
+          {/* Enlaces de navegación - texto reducido */}
+          <div className="flex items-center space-x-6">
             {navItems.map((item) => (
-              <div 
-                key={item.view} 
-                className="relative"
-                onMouseEnter={() => item.megaMenu && handleMouseEnter(item.view)} 
-                onMouseLeave={() => item.megaMenu && handleMouseLeave()}
+              <button
+                key={item.view}
+                onClick={() => setView(item.view)}
+                className="text-[13px] tracking-wide text-gray-700 hover:text-red-600 transition-colors py-1.5 uppercase"
+                style={{ fontFamily: "var(--font-uncial-antiqua)" }}
               >
-                <button
-                  onClick={() => { setView(item.view); setOpenMenu(null); }}
-                  className="text-sm font-medium tracking-wide text-gray-700 hover:text-red-600 transition-colors py-2 uppercase"
-                >
-                  {item.label}
-                  {item.megaMenu && (
-                    <span className="ml-1 inline-block">▾</span>
-                  )}
-                </button>
-                
-                {/* Indicador de elemento activo */}
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-red-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                
-                {/* Mega Menú */}
-                {item.megaMenu && openMenu === item.view && (
-                  <div 
-                    onMouseEnter={() => handleMenuInteraction("enter")} 
-                    onMouseLeave={() => handleMenuInteraction("leave")} 
-                    className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded-md border border-gray-100 z-20 overflow-hidden min-w-[600px]"
-                  >
-                    <MegaMenu 
-                      items={item.megaMenu} 
-                      setView={setView} 
-                      closeMenu={() => setOpenMenu(null)} 
-                    />
-                  </div>
-                )}
-              </div>
+                {item.label}
+              </button>
             ))}
           </div>
           
           {/* Botones de acción */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center">
             <button 
               onClick={toggleCart}
               className="p-2 rounded-md hover:bg-gray-100 transition-all relative"
               title="Carrito"
             >
-              <CartIcon className="w-6 h-6 text-gray-700" />
+              <CartIcon className="w-5 h-5 text-gray-700" />
               {isMounted && totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                   {totalItems}
                 </span>
               )}
             </button>
-
-            {/* <<< Botón Admin eliminado >>> */}
-
           </div>
         </nav>
       </div>
@@ -854,17 +806,14 @@ function BrandCard({ brand, setView }: BrandCardProps) {
     };
     return (<div className="bg-white rounded-lg shadow-md overflow-hidden group transition-all duration-300 ease-in-out hover:shadow-xl flex flex-col md:flex-row items-center"><div className="p-5 md:p-6 flex-1"><img src={brand.logoUrl || `https://placehold.co/150x50/ffffff/cccccc?text=${brand.name}`} alt={`${brand.name} Logo`} className="h-8 md:h-10 mb-4 object-contain self-start" loading="lazy" /><button onClick={handleViewBrandClick} className="text-sm text-blue-600 hover:text-blue-800 hover:underline mb-2 block">Ver neumáticos {brand.name}</button><p className="text-xs text-gray-500 mb-1">Destacado:</p><p className="text-sm font-semibold text-gray-800 mb-2 line-clamp-2">{brand.topTireName}</p>{brand.topTireRating && brand.topTireRating > 0 && (<div className="flex items-center text-sm"><div className="flex mr-2">{[1, 2, 3, 4, 5].map((star) => (<StarIcon key={star} filled={star <= Math.round(brand.topTireRating || 0)} className="w-4 h-4" />))}</div><span className="font-semibold mr-1">{(brand.topTireRating || 0).toFixed(1)}</span>{brand.topTireReviews && brand.topTireReviews > 0 && <span className="text-gray-500">({brand.topTireReviews})</span>}</div>)}</div><div className="w-full md:w-1/3 flex-shrink-0 aspect-square md:aspect-auto md:h-full overflow-hidden"><img src={brand.tireImageUrl || "https://placehold.co/400x400/cccccc/ffffff?text=Tire"} alt={`Neumático ${brand.name}`} className="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" loading="lazy" onError={handleImageError} /></div></div>) }
 
-
 // --- ShopByBrandPage Component ---
 interface ShopByBrandPageProps {
     setView: SetViewFunction;
 }
 function ShopByBrandPage({ setView }: ShopByBrandPageProps) { return (<div className="bg-gradient-to-b from-gray-50 to-gray-100 py-10 md:py-16"><div className="container mx-auto px-4 lg:px-6"><h1 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-800">Comprar Neumáticos por Marca</h1><div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">{brandsData.map((brand: BrandData) => (<BrandCard key={brand.name} brand={brand} setView={setView} />))}</div><div className="text-center mt-12"><Button variant="outline" onClick={() => setView("neumaticos")}>Ver Todos los Neumáticos</Button></div></div></div>) }
-
 // --- Footer Component ---
 // Tipar eventos onClick de ejemplo
-function Footer() { const wN = "54911XXXXXXXX"; const pN = "+11XXXXXXXX"; const preventDefault = (e: MouseEvent) => e.preventDefault(); return (<footer className="bg-black text-gray-300 pt-8 md:pt-12 pb-20 md:pb-8 mt-8 md:mt-16"><div className="container mx-auto px-4 lg:px-6"><div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8"><div><h5 className="font-semibold mb-3 uppercase text-sm text-white">Servicios</h5><ul className="space-y-2 text-xs"><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Alineación y Balanceo</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Reparación Llantas</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Frenos</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Suspensión</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Mecánica Ligera</a></li></ul></div><div><h5 className="font-semibold mb-3 uppercase text-sm text-white">Productos</h5><ul className="space-y-2 text-xs"><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Neumáticos Nuevos</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Llantas Aleación</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Llantas Chapa</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Accesorios</a></li></ul></div><div className="mt-6 md:mt-0"><h5 className="font-semibold mb-3 uppercase text-sm text-white">La Empresa</h5><ul className="space-y-2 text-xs"><li><a href="#" className="hover:text-white hover:underline block py-1">Quiénes Somos</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Nuestra Historia</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Sucursal San Justo</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Trabajá con Nosotros</a></li></ul></div><div className="mt-6 md:mt-0"><h5 className="font-semibold mb-3 uppercase text-sm text-white">Contacto</h5><ul className="space-y-2 text-xs"><li className="py-1"><a href={`tel:${pN}`} className="flex items-center hover:text-white"><PhoneIcon className="h-4 w-4 mr-2 shrink-0" />{pN.replace("+", "")}</a></li><li className="py-1"><a href="mailto:info@jcselguardian.com.ar" className="flex items-center hover:text-white break-all"><UserIcon className="h-4 w-4 mr-2 shrink-0" />info@jcselguardian.com.ar</a></li><li className="py-1"><a href="https://maps.google.com/?q=San+Justo,Buenos+Aires" target="_blank" className="flex items-center hover:text-white" rel="noreferrer"><LocationIcon className="h-4 w-4 mr-2 shrink-0" />Calle Falsa 123, San Justo</a></li><li className="py-1"><div className="flex space-x-3 mt-3"><a href="https://www.instagram.com/jcselguardian.oficial/" target="_blank" rel="noopener noreferrer" className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full flex items-center justify-center w-7 h-7" title="Instagram"><svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.315 2c-4.013 0-4.505.014-6.09.088C4.63.158 3.86.324 3.186.594c-.7.278-1.306.678-1.888 1.26C.716 2.44.316 3.046.038 3.746c-.27.674-.436 1.444-.508 3.03C- .55 1.807 2 2.3 2 6.314v11.372c0 4.013.014 4.505.088 6.09.074 1.586.238 2.356.508 3.03.278.7.678 1.306 1.26 1.888.582.582 1.188.982 1.888 1.26.674.27 1.444.436 3.03.508C7.807 21.986 8.3 22 12.315 22h.001c4.013 0 4.505-.014 6.09-.088 1.586-.074 2.356-.238 3.03-.508.7-.278 1.306-.678 1.888-1.26.582-.582.982-1.188 1.26-1.888.27-.674.436-1.444.508-3.03.074-1.585.088-2.077.088-6.09V6.314c0-4.013-.014-4.505-.088-6.09-.074-1.586-.238-2.356-.508-3.03-.278-.7-.678-1.306-1.26-1.888C21.56.316 20.954-.084 20.254 0c-.674-.27-1.444-.436-3.03-.508C16.82.014 16.328 0 12.315 0h-.001zm0 2.163c3.927 0 4.38.016 5.917.086 1.428.066 2.06.236 2.49.414.512.206.896.49 1.297.89.398.402.684.784.89 1.298.178.43.348 1.062.414 2.49.07 1.537.086 1.99.086 5.917s-.016 4.38-.086 5.917c-.066 1.428-.236 2.06-.414 2.49-.206.512-.49.896-.89 1.297-.402.398-.784.684-1.298.89-.43.178-1.062.348-2.49.414-1.537.07-1.99.086-5.917.086s-4.38-.016-5.917-.086c-1.428-.066-2.06-.236-2.49-.414-.512-.206-.896-.49-1.297-.89-.398-.402-.684-.784-.89-1.298-.178-.43-.348-1.062-.414-2.49-.07-1.537-.086-1.99-.086-5.917s.016-4.38.086-5.917c.066-1.428.236-2.06.414-2.49.206-.512.49-.896.89-1.297.402-.398.784-.684 1.298-.89.43-.178 1.062.348 2.49-.414C7.935 2.179 8.388 2.163 12.315 2.163zm0 12.315c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6zm0-10c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4zm6.406-4.303c-.776 0-1.406.63-1.406 1.406s.63 1.406 1.406 1.406 1.406-.63 1.406-1.406-.63-1.406-1.406-1.406z" clipRule="evenodd" /></svg></a></div></li></ul></div></div><div className="border-t border-gray-700 pt-6 text-center text-xs text-gray-500"><p>© {new Date().getFullYear()} JCS El Guardián. Todos los derechos reservados.</p><div className="flex justify-center space-x-4 mt-4"><a href="#" className="hover:text-white">Términos</a><span>|</span><a href="#" className="hover:text-white">Privacidad</a></div></div></div><div className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 py-2 px-4 flex justify-around items-center md:hidden z-40"><a href={`tel:${pN}`} className="flex flex-col items-center text-gray-400 hover:text-white px-1"><PhoneIcon className="h-5 w-5" /><span className="text-[10px] mt-1">Llamar</span></a><a href={`https://wa.me/${wN}`} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-gray-400 hover:text-white px-1"><WhatsAppIcon className="h-5 w-5" /><span className="text-[10px] mt-1">WhatsApp</span></a><a href="https://maps.google.com/?q=San+Justo,Buenos+Aires" target="_blank" className="flex flex-col items-center text-gray-400 hover:text-white px-1" rel="noreferrer"><LocationIcon className="h-5 w-5" /><span className="text-[10px] mt-1">Ubicación</span></a><button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} className="flex flex-col items-center text-gray-400 hover:text-white px-1"><ArrowUpIcon className="h-5 w-5" /><span className="text-[10px] mt-1">Subir</span></button></div></footer>) }
-
+function Footer() { const wN = "54911XXXXXXXX"; const pN = "+11XXXXXXXX"; const preventDefault = (e: MouseEvent) => e.preventDefault(); return (<footer className="bg-black text-gray-300 pt-8 md:pt-12 pb-20 md:pb-8 mt-8 md:mt-16"><div className="container mx-auto px-4 lg:px-6"><div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8"><div><h5 className="font-semibold mb-3 uppercase text-sm text-white">Servicios</h5><ul className="space-y-2 text-xs"><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Alineación y Balanceo</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Reparación Llantas</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Frenos</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Suspensión</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Mecánica Ligera</a></li></ul></div><div><h5 className="font-semibold mb-3 uppercase text-sm text-white">Productos</h5><ul className="space-y-2 text-xs"><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Neumáticos Nuevos</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Llantas Aleación</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Llantas Chapa</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Accesorios</a></li></ul></div><div className="mt-6 md:mt-0"><h5 className="font-semibold mb-3 uppercase text-sm text-white">La Empresa</h5><ul className="space-y-2 text-xs"><li><a href="#" className="hover:text-white hover:underline block py-1">Quiénes Somos</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Nuestra Historia</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Sucursal San Justo</a></li><li><a href="#" onClick={preventDefault} className="hover:text-white hover:underline block py-1">Trabajá con Nosotros</a></li></ul></div><div className="mt-6 md:mt-0"><h5 className="font-semibold mb-3 uppercase text-sm text-white">Contacto</h5><ul className="space-y-2 text-xs"><li className="py-1"><a href={`tel:${pN}`} className="flex items-center hover:text-white"><PhoneIcon className="h-4 w-4 mr-2 shrink-0" />{pN.replace("+", "")}</a></li><li className="py-1"><a href="mailto:info@jcselguardian.com.ar" className="flex items-center hover:text-white break-all"><UserIcon className="h-4 w-4 mr-2 shrink-0" />info@jcselguardian.com.ar</a></li><li className="py-1"><a href="https://maps.google.com/?q=San+Justo,Buenos+Aires" target="_blank" className="flex items-center hover:text-white" rel="noreferrer"><LocationIcon className="h-4 w-4 mr-2 shrink-0" />Calle Falsa 123, San Justo</a></li><li className="py-1"><div className="flex space-x-3 mt-3"><a href="https://www.instagram.com/jcselguardian.oficial/" target="_blank" rel="noopener noreferrer" className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full flex items-center justify-center w-7 h-7" title="Instagram"><svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.315 2c-4.013 0-4.505.014-6.09.088C4.63 0.158 3.86 0.324 3.186 0.594c-0.7 0.278-1.306 0.678-1.888 1.26C0.716 2.44 0.316 3.046 0.038 3.746c-0.27 0.674-0.436 1.444-0.508 3.03C- .55 1.807 2 2.3 2 6.314v11.372c0 4.013.014 4.505.088 6.09.074 1.586.238 2.356.508 3.03.278.7.678 1.306 1.26 1.888.582.582 1.188.982 1.888 1.26.674.27 1.444.436 3.03.508C7.807 21.986 8.3 22 12.315 22h0.001c4.013 0 4.505-.014 6.09-.088 1.586-.074 2.356-.238 3.03-.508.7-.278 1.306-.678 1.888-1.26.582-.582.982-1.188 1.26-1.888.27-.674.436-1.444.508-3.03.074-1.585.088-2.077.088-6.09V6.314c0-4.013-0.014-4.505-.088-6.09-0.074-1.586-0.238-2.356-0.508-3.03-0.278-0.7-0.678-1.306-1.26-1.888C21.56 0.316 20.954 0.084 20.254 0c-0.674-0.27-1.444-0.436-3.03-0.508C16.82 0.014 16.328 0 12.315 0h-0.001zm0 2.163c3.927 0 4.38.016 5.917.086 1.428.066 2.06.236 2.49.414 0.512.206 0.896.49 1.297.89 0.398 0.402 0.684 0.784 0.89 1.298 0.178 0.43 0.348 1.062 0.414 2.49 0.07 1.537 0.086 1.99 0.086 5.917s-0.016 4.38-0.086 5.917c-0.066 1.428-0.236 2.06-0.414 2.49-0.206 0.512-0.49.896-.89 1.297-0.402 0.398-0.784 0.684-1.298 0.89-0.43 0.178-1.062 0.348-2.49 0.414-1.537 0.07-1.99 0.086-5.917 0.086s-4.38-0.016-5.917-0.086c-1.428-0.066-2.06-0.236-2.49-0.414-0.512-0.206-0.896-0.49-1.297-0.89-0.398-.402-0.684-.784-0.89-1.298-0.178-.43-0.348-1.062-.414-2.49-.07-1.537-0.086-1.99-0.086-5.917s0.016-4.38.086-5.917c0.066-1.428.236-2.06.414-2.49 0.206-.512.49-.896.89-1.297.402-.398.784-.684 1.298-.89 0.43-.178 1.062.348 2.49-.414C7.935 2.179 8.388 2.163 12.315 2.163zm0 12.315c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6zm0-10c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4zm6.406-4.303c-0.776 0-1.406 0.63-1.406 1.406s0.63 1.406 1.406 1.406 1.406-0.63 1.406-1.406-0.63-1.406-1.406-1.406z" clipRule="evenodd" /></svg></a></div></li></ul></div></div><div className="border-t border-gray-700 pt-6 text-center text-xs text-gray-500"><p>© {new Date().getFullYear()} JCS El Guardián. Todos los derechos reservados.</p><div className="flex justify-center space-x-4 mt-4"><a href="#" className="hover:text-white">Términos</a><span>|</span><a href="#" className="hover:text-white">Privacidad</a></div></div></div><div className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 py-2 px-4 flex justify-around items-center md:hidden z-40"><a href={`tel:${pN}`} className="flex flex-col items-center text-gray-400 hover:text-white px-1"><PhoneIcon className="h-5 w-5" /><span className="text-[10px] mt-1">Llamar</span></a><a href={`https://wa.me/${wN}`} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-gray-400 hover:text-white px-1"><WhatsAppIcon className="h-5 w-5" /><span className="text-[10px] mt-1">WhatsApp</span></a><a href="https://maps.google.com/?q=San+Justo,Buenos+Aires" target="_blank" className="flex flex-col items-center text-gray-400 hover:text-white px-1" rel="noreferrer"><LocationIcon className="h-5 w-5" /><span className="text-[10px] mt-1">Ubicación</span></a><button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} className="flex flex-col items-center text-gray-400 hover:text-white px-1"><ArrowUpIcon className="h-5 w-5" /><span className="text-[10px] mt-1">Subir</span></button></div></footer>) }
 
 // --- Hero Section Component ---
 interface HeroSectionProps {
@@ -1038,8 +987,24 @@ interface StorefrontProps {
     setView: SetViewFunction;
     handleSearch: (filters: Record<string, string>) => void;
 }
-function Storefront({ setView, handleSearch }: StorefrontProps) { const { products } = useProducts(); const scrollContainerRef = useRef<HTMLDivElement>(null); const handleProductSelect = (product: Product) => { setView("productDetail", { product: product }); }; const scroll = (offset: number) => { if (scrollContainerRef.current) scrollContainerRef.current.scrollBy({ left: offset, behavior: "smooth" }); }; const carouselItems: CarouselItem[] = [{ imageUrl: "https://res.cloudinary.com/dt5pkdr0k/image/upload/v1745032889/image_fx_55_ymeuvt.png", title: "¡Oferta Llantas!", subtitle: "Renová tus llantas.", buttonText: "Ver Llantas", onClick: () => setView("llantas"), }, { imageUrl: "https://placehold.co/1920x700/495057/ffffff?text=Servicio+Frenos", title: "Servicio de Frenos", subtitle: "Control y reparación.", buttonText: "Pedir Turno", onClick: () => setView("contacto"), },]; const [isMobile, setIsMobile] = useState(false); useEffect(() => { const check = () => setIsMobile(window.innerWidth < 768); check(); window.addEventListener("resize", check); return () => window.removeEventListener("resize", check); }, []); const displayProducts = Array.isArray(products) ? products : []; const limitedProducts = displayProducts.slice(0, 8); const tireProducts = displayProducts.filter(p => p.category === "neumatico"); const { addToCart } = useCart(); // Obtener addToCart para ProductGridMobile
-return (<><HeroSection handleSearch={handleSearch} /><div id="productos-servicios" className="container mx-auto px-2 md:px-4 lg:px-6 py-6 md:py-12 scroll-mt-20"><div className="flex justify-between items-center mb-4 md:mb-6 px-2 md:px-0"><h2 className="text-lg md:text-2xl font-semibold">Productos y Servicios</h2>{!isMobile && displayProducts.length > 4 && (<div className="hidden sm:flex space-x-2"><Button variant="outline" size="icon" onClick={() => scroll(-300)} title="Scroll Izquierda"><ChevronLeftIcon /></Button><Button variant="outline" size="icon" onClick={() => scroll(300)} title="Scroll Derecha"><ChevronRightIcon /></Button></div>)}</div>{displayProducts.length === 0 ? (<p className="text-center text-gray-500 py-8">Cargando o no hay productos...</p>) : isMobile ? (<div className="grid grid-cols-2 gap-3 px-1">{limitedProducts.map((p) => (<ProductCardMobile key={p.id || Math.random()} product={p} onProductSelect={handleProductSelect}/>))}{tireProducts.length > 0 && (<div className="col-span-2 text-center mt-4"><Button variant="outline" size="sm" onClick={() => setView("neumaticos")}>Ver más</Button></div>)}</div>) : (<div ref={scrollContainerRef} className="flex overflow-x-auto space-x-4 pb-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 -mx-4 px-4">{displayProducts.map((p) => (<ProductCard key={p.id || Math.random()} product={p} onProductSelect={handleProductSelect} />))}</div>)}</div><div className="py-6 md:py-12"><ImageCarousel items={carouselItems} /></div>{typeof TestimonialsSection === "function" ? (<TestimonialsSection />) : (<div className="text-center py-8 text-gray-500">(Testimonials)</div>)}</>) }
+function Storefront({ setView, handleSearch }: StorefrontProps) { 
+  const { products, loading: productsLoading } = useProducts(); // Destructurar loading
+  const scrollContainerRef = useRef<HTMLDivElement>(null); 
+  const handleProductSelect = (product: Product) => { setView("productDetail", { product: product }); }; 
+  const scroll = (offset: number) => { if (scrollContainerRef.current) scrollContainerRef.current.scrollBy({ left: offset, behavior: "smooth" }); }; 
+  const carouselItems: CarouselItem[] = [{ imageUrl: "https://res.cloudinary.com/dt5pkdr0k/image/upload/v1745032889/image_fx_55_ymeuvt.png", title: "¡Oferta Llantas!", subtitle: "Renová tus llantas.", buttonText: "Ver Llantas", onClick: () => setView("llantas"), }, { imageUrl: "https://placehold.co/1920x700/495057/ffffff?text=Servicio+Frenos", title: "Servicio de Frenos", subtitle: "Control y reparación.", buttonText: "Pedir Turno", onClick: () => setView("contacto"), },]; 
+  const [isMobile, setIsMobile] = useState(false); 
+  useEffect(() => { const check = () => setIsMobile(window.innerWidth < 768); check(); window.addEventListener("resize", check); return () => window.removeEventListener("resize", check); }, []); 
+  const displayProducts = Array.isArray(products) ? products : []; 
+  const limitedProducts = displayProducts.slice(0, 8); 
+  const tireProducts = displayProducts.filter(p => p.category === "neumatico"); 
+  const { addToCart } = useCart(); 
+  return (<><HeroSection handleSearch={handleSearch} /><div id="productos-servicios" className="container mx-auto px-2 md:px-4 lg:px-6 py-6 md:py-12 scroll-mt-20"><div className="flex justify-between items-center mb-4 md:mb-6 px-2 md:px-0"><h2 className="text-lg md:text-2xl font-semibold">Productos y Servicios</h2>{!isMobile && displayProducts.length > 4 && (<div className="hidden sm:flex space-x-2"><Button variant="outline" size="icon" onClick={() => scroll(-300)} title="Scroll Izquierda"><ChevronLeftIcon /></Button><Button variant="outline" size="icon" onClick={() => scroll(300)} title="Scroll Derecha"><ChevronRightIcon /></Button></div>)}</div>
+    {productsLoading && displayProducts.length === 0 ? (
+      <GenericLoadingSpinner text="Cargando productos y servicios..." />
+    ) : displayProducts.length === 0 ? (
+      <p className="text-center text-gray-500 py-8">No hay productos disponibles en este momento.</p> 
+    ) : isMobile ? (<div className="grid grid-cols-2 gap-3 px-1">{limitedProducts.map((p) => (<ProductCardMobile key={p.id || Math.random()} product={p} onProductSelect={handleProductSelect} />))}{tireProducts.length > 0 && (<div className="col-span-2 text-center mt-4"><Button variant="outline" size="sm" onClick={() => setView("neumaticos")}>Ver más</Button></div>)}</div>) : (<div ref={scrollContainerRef} className="flex overflow-x-auto space-x-4 pb-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 -mx-4 px-4">{displayProducts.map((p) => (<ProductCard key={p.id || Math.random()} product={p} onProductSelect={handleProductSelect} />))}</div>)}</div><div className="py-6 md:py-12"><ImageCarousel items={carouselItems} /></div><WhyChooseUs /></>) }
 
 
 // --- Product Detail Page (CON CARRUSEL DE IMAGEN) ---
@@ -1196,22 +1161,99 @@ function CategoryPage({
   filterType = null,
   initialBrandFilter = null,
 }: CategoryPageProps) {
-  const { products } = useProducts();
+  const { products, loading: productsLoading } = useProducts(); // Destructurar y renombrar loading
   const [selectedBrand, setSelectedBrand] = useState(initialBrandFilter || "");
   const [selectedPriceRange, setSelectedPriceRange] = useState("");
+  // Nuevos estados para los filtros de chips
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(initialBrandFilter ? [initialBrandFilter] : []);
+  const [selectedRodados, setSelectedRodados] = useState<number[]>([]);
+  // Siempre usar filtros visuales para llantas
+  const useVisualFilters = category === 'llanta';
 
   // Calcular marcas disponibles
   const availableBrands = useMemo(() => {
       const safeProducts = Array.isArray(products) ? products : [];
       if (!safeProducts || !category) return [];
       let categoryProducts = safeProducts.filter(p => p && p.category === category);
+      
       // Aplica filtros de HeroSearch ANTES de sacar las marcas
       if (currentFilters.ancho) { categoryProducts = categoryProducts.filter((p) => p && String(p.specs?.ancho) === String(currentFilters.ancho)); }
       if (currentFilters.perfil) { categoryProducts = categoryProducts.filter((p) => p && String(p.specs?.perfil) === String(currentFilters.perfil)); }
       if (currentFilters.diametro) { categoryProducts = categoryProducts.filter((p) => p && String(p.specs?.rodado) === String(currentFilters.diametro)); }
-      const brands = new Set(categoryProducts.map(p => getProductBrand(p)).filter((b): b is string => b !== null && b !== 'Otros')); // Filtrar null y 'Otros' y asegurar string
-      return Array.from(brands).sort();
+      
+      // Para llantas, buscar en specs.marca (que es más específico para llantas)
+      if (category === 'llanta') {
+        const brands = new Set<string>();
+        categoryProducts.forEach(p => {
+          if (p && p.specs?.marca) {
+            brands.add(String(p.specs.marca));
+          }
+        });
+        return Array.from(brands).sort();
+      } else {
+        // Para neumáticos y otros, usar getProductBrand
+        const brands = new Set(categoryProducts.map(p => getProductBrand(p)).filter((b): b is string => b !== null && b !== 'Otros')); 
+        return Array.from(brands).sort();
+      }
   }, [products, category, currentFilters]);
+
+  // Calcular rodados disponibles (solo para llantas)
+  const availableRodados = useMemo(() => {
+      if (category !== 'llanta') return [];
+      const productsList = Array.isArray(products) ? products : [];
+      if (!productsList || !category) return [];
+      
+      let categoryProducts = productsList.filter((p: Product) => p && p.category === category);
+      
+      // Aplicar filtros ya seleccionados (excepto rodados)
+      if (selectedBrands.length > 0) {
+          categoryProducts = categoryProducts.filter((p: Product) => 
+              p && p.specs?.marca && selectedBrands.includes(String(p.specs.marca))
+          );
+      }
+      
+      // También aplicar filtros de precio si hay alguno seleccionado
+      if (selectedPriceRange) {
+          const [minStr, maxStr] = selectedPriceRange.split('-');
+          const minPrice = parseInt(minStr);
+          const maxPrice = maxStr ? parseInt(maxStr) : Infinity;
+          categoryProducts = categoryProducts.filter((p: Product) => { 
+              if (!p || typeof p.price !== 'number' || p.price <= 0) return false; 
+              return p.price >= minPrice && p.price <= maxPrice; 
+          });
+      }
+      
+      const rodados = new Set<number>();
+      categoryProducts.forEach((p: Product) => {
+          if (p && p.specs?.rodado) {
+              // Convertir a número para asegurar que los valores se almacenen correctamente
+              const rodadoNum = Number(p.specs.rodado);
+              if (!isNaN(rodadoNum)) {
+                  rodados.add(rodadoNum);
+              }
+          }
+      });
+      
+      return Array.from(rodados).sort((a, b) => a - b);
+  }, [products, category, selectedBrands, selectedPriceRange]);
+  
+  // Manejadores para los filtros visuales
+  const handleBrandToggle = (brand: string) => {
+      setSelectedBrands(prev => 
+          prev.includes(brand) 
+              ? prev.filter(b => b !== brand) 
+              : [...prev, brand]
+      );
+      setSelectedBrand(""); // Limpiar el filtro de menú desplegable para evitar conflictos
+  };
+  
+  const handleRodadoToggle = (rodado: number) => {
+      setSelectedRodados(prev => 
+          prev.includes(rodado) 
+              ? prev.filter(r => r !== rodado) 
+              : [...prev, rodado]
+      );
+  };
 
   // Lógica de filtrado combinada
   const filteredProducts: Product[] = useMemo(() => {
@@ -1252,8 +1294,27 @@ function CategoryPage({
         results = results.filter(p => { if (!p || typeof p.price !== 'number' || p.price <= 0) return false; return p.price >= minPrice && p.price <= maxPrice; });
     }
 
+    // 3. Filtros visuales (chips)
+    if (useVisualFilters) {
+        // Filtro de marcas (visual)
+        if (selectedBrands.length > 0) {
+            results = results.filter(p => {
+                if (!p || !p.specs?.marca) return false;
+                return selectedBrands.includes(String(p.specs.marca));
+            });
+        }
+        
+        // Filtro de rodados (visual)
+        if (selectedRodados.length > 0) {
+            results = results.filter(p => {
+                if (!p || !p.specs?.rodado) return false;
+                return selectedRodados.includes(Number(p.specs.rodado));
+            });
+        }
+    }
+
     return results;
-  }, [products, category, currentFilters, filterType, selectedBrand, selectedPriceRange, initialBrandFilter]);
+  }, [products, category, currentFilters, filterType, selectedBrand, selectedPriceRange, initialBrandFilter, useVisualFilters, selectedBrands, selectedRodados]);
 
   const handleProductSelect = (product: Product) => { setView("productDetail", { product: product }); };
   const handleBrandChange = (e: ChangeEvent<HTMLSelectElement>) => { setSelectedBrand(e.target.value); };
@@ -1276,13 +1337,28 @@ function CategoryPage({
   const priceRanges = [ { value: "0-100000", label: "Hasta $100.000" }, { value: "100001-200000", label: "$100.001 - $200.000" }, { value: "200001-300000", label: "$200.001 - $300.000" }, { value: "300001-500000", label: "$300.001 - $500.000" }, { value: "500001", label: "Más de $500.000" }, ];
   const { addToCart } = useCart(); // Necesario para ProductGridMobile
 
+  // Añadimos estos estados al nivel superior
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 9; // 3 columnas x 3 filas
+
   return (
     <div className="container mx-auto px-0 md:px-4 lg:px-6 py-4 md:py-12">
       {isMobile ? (
-        <ProductGridMobile products={filteredProducts} onProductSelect={handleProductSelect} categoryLabel={pageTitle} setView={setView} addToCart={addToCart}/>
+        // Vista Móvil
+        productsLoading && (!Array.isArray(products) || products.length === 0) ? (
+          <GenericLoadingSpinner text={`Cargando ${pageTitle}...`} />
+        ) : (
+          <ProductGridMobile 
+            products={filteredProducts} 
+            onProductSelect={handleProductSelect} 
+            categoryLabel={pageTitle} 
+            setView={setView} 
+            addToCart={addToCart}
+          />
+        )
       ) : (
         <>
-          <h1 className="text-2xl md:text-3xl font-bold mb-4 text-center">
+          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">
             {pageTitle}
             {hasActiveSearchFilters && !activeBrandFilter && (
               <span className="block text-sm font-normal text-gray-500 mt-1">
@@ -1290,50 +1366,234 @@ function CategoryPage({
               </span>
             )}
           </h1>
-          <div className="mb-6 md:mb-8 px-4 md:px-0">
-            <div className="flex flex-col md:flex-row gap-4 items-center bg-white p-3 md:p-4 rounded-md border shadow-sm">
-              <span className="text-sm font-medium text-gray-700 shrink-0 hidden md:block">Filtrar por:</span>
-              {category === 'neumatico' && availableBrands.length > 0 && (
-                  <div className="w-full md:w-auto md:flex-1">
-                      <Label htmlFor="brand-filter" className="sr-only md:hidden">Marca</Label>
-                      <Select id="brand-filter" value={selectedBrand} onChange={handleBrandChange} className="text-sm h-9 w-full">
-                          <option value="">Todas las Marcas ({availableBrands.length})</option>
-                          {availableBrands.map(brand => ( <option key={brand} value={brand}>{brand}</option> ))}
-                      </Select>
-                  </div>
-              )}
-              {category !== 'servicio' && (
-                <div className="w-full md:w-auto md:flex-1">
-                    <Label htmlFor="price-filter" className="sr-only md:hidden">Precio</Label>
-                    <Select id="price-filter" value={selectedPriceRange} onChange={handlePriceChange} className="text-sm h-9 w-full">
-                        <option value="">Todos los Precios</option>
-                        {priceRanges.map(range => ( <option key={range.value} value={range.value}>{range.label}</option> ))}
-                    </Select>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="md:col-span-1">
+              {/* Panel de filtros */}
+              <div className="border border-gray-200 rounded-xl shadow-sm bg-white overflow-hidden sticky top-24">
+                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                  <h3 className="text-sm font-semibold text-gray-800">Filtrar {categoryLabel}</h3>
                 </div>
-              )}
-               {category === 'neumatico' && (
-                  <Button variant="ghost" size="sm" onClick={() => setView('shopByBrand')} className="ml-auto h-9 text-xs hidden md:inline-flex">
-                      Ver Todas las Marcas
-                  </Button>
-              )}
-               {(selectedBrand || selectedPriceRange || hasActiveSearchFilters || filterType) && (
-                 <Button variant="link" size="sm" onClick={() => { setSelectedBrand(''); setSelectedPriceRange(''); setView(category as ViewName, { filters: { category: category } }) }} className="text-xs h-9">
-                     Limpiar Filtros
-                 </Button>
+                
+                <div className="p-4 border-b border-gray-200">
+                  <h4 className="text-xs font-medium text-gray-500 uppercase mb-3">Marca</h4>
+                  {useVisualFilters ? (
+                    <div className="flex flex-wrap gap-2">
+                      {availableBrands.map((brand) => (
+                        <button
+                          key={brand}
+                          onClick={() => handleBrandToggle(brand)}
+                          className={`px-2 py-1 text-xs rounded-full border ${
+                            selectedBrands.includes(brand)
+                              ? 'bg-red-600 text-white border-red-600'
+                              : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200'
+                          }`}
+                        >
+                          {brand}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <Select
+                      value={selectedBrand}
+                      onChange={handleBrandChange}
+                      className="w-full text-sm"
+                    >
+                      <option value="">Todas las marcas</option>
+                      {availableBrands.map((brand) => (
+                        <option key={brand} value={brand}>{brand}</option>
+                      ))}
+                    </Select>
+                  )}
+                </div>
+                
+                {/* Filtro de precio */}
+                <div className="p-4 border-b border-gray-200">
+                  <h4 className="text-xs font-medium text-gray-500 uppercase mb-3">Precio</h4>
+                  <Select
+                    value={selectedPriceRange}
+                    onChange={handlePriceChange}
+                    className="w-full text-sm"
+                  >
+                    <option value="">Todos los precios</option>
+                    {priceRanges.map((range) => (
+                      <option key={range.value} value={range.value}>{range.label}</option>
+                    ))}
+                  </Select>
+                </div>
+                
+                {/* Filtro de rodado (solo para llantas) */}
+                {category === 'llanta' && availableRodados.length > 0 && (
+                  <div className="p-4 border-b border-gray-200">
+                    <h4 className="text-xs font-medium text-gray-500 uppercase mb-3">Rodado</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {availableRodados.map((rodado) => (
+                        <button
+                          key={rodado}
+                          onClick={() => handleRodadoToggle(rodado)}
+                          className={`px-2 py-1 text-xs rounded-full border ${
+                            selectedRodados.includes(rodado)
+                              ? 'bg-red-600 text-white border-red-600'
+                              : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200'
+                          }`}
+                        >
+                          R{rodado}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
+                
+                {/* Botón para limpiar filtros */}
+                {(selectedBrand || selectedPriceRange || selectedBrands.length > 0 || selectedRodados.length > 0) && (
+                  <div className="p-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs"
+                      onClick={() => {
+                        setSelectedBrand("");
+                        setSelectedPriceRange("");
+                        setSelectedBrands([]);
+                        setSelectedRodados([]);
+                      }}
+                    >
+                      Limpiar Filtros
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          {filteredProducts.length === 0 ? (
-             <p className="text-center text-gray-500 py-8">No se encontraron productos con los filtros seleccionados.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 justify-items-center">
-              {filteredProducts.map((product) => (<ProductCard key={product.id || Math.random()} product={product} onProductSelect={handleProductSelect} />))}
+
+            <div className="md:col-span-3">
+              {productsLoading && (!Array.isArray(products) || products.length === 0) ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-xl border border-gray-200 min-h-[300px]">
+                  <GenericLoadingSpinner text={`Cargando ${categoryLabel}...`} />
+                </div>
+              ) : filteredProducts.length === 0 && (Array.isArray(products) && products.length > 0) ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-xl border border-gray-200 min-h-[300px]">
+                  <div className="w-10 h-10 border-2 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                  <p className="text-gray-500">Aplicando filtros...</p>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="bg-white rounded-xl border border-gray-200 p-8 text-center min-h-[300px] flex flex-col justify-center items-center">
+                  <p className="text-gray-500 mb-4">No se encontraron productos con los filtros seleccionados.</p>
+                  <button 
+                    onClick={() => {
+                      setSelectedBrands([]);
+                      setSelectedRodados([]);
+                      setSelectedPriceRange('');
+                      setSelectedBrand('');
+                      setView(category as ViewName, { filters: { category: category } });
+                    }} 
+                    className="text-sm text-red-600 hover:underline"
+                  >
+                    Limpiar filtros y ver todos
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Calcular productos a mostrar en la página actual */}
+                  {(() => {
+                    // Calcular productos a mostrar en la página actual
+                    const indexOfLastProduct = currentPage * productsPerPage;
+                    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+                    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+                    
+                    // Calcular total de páginas
+                    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+                    
+                    // Función para cambiar página
+                    const paginate = (pageNumber: number) => {
+                      setCurrentPage(pageNumber);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    };
+                    
+                    // Renderizar componentes
+                    return (
+                      <>
+                        {/* Grid de productos */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                          {currentProducts.map((product) => (
+                            <ProductCard 
+                              key={product.id || Math.random()} 
+                              product={product} 
+                              onProductSelect={handleProductSelect} 
+                            />
+                          ))}
+                        </div>
+                        
+                        {/* Controles de paginación */}
+                        {totalPages > 1 && (
+                          <div className="flex justify-center items-center mt-8 bg-white rounded-lg border border-gray-200 p-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => paginate(currentPage - 1)}
+                              disabled={currentPage === 1}
+                              className="mr-2"
+                              aria-label="Página anterior"
+                            >
+                              <ChevronLeftIcon />
+                            </Button>
+                            
+                            <div className="flex space-x-1">
+                              {Array.from({ length: totalPages }, (_, i) => {
+                                // Mostrar solo un número limitado de páginas
+                                const pageNum = i + 1;
+                                const isCurrentPage = pageNum === currentPage;
+                                
+                                // Mostrar solo páginas cercanas a la actual
+                                if (
+                                  pageNum === 1 || 
+                                  pageNum === totalPages || 
+                                  (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                                ) {
+                                  return (
+                                    <Button
+                                      key={pageNum}
+                                      variant={isCurrentPage ? "default" : "outline"}
+                                      size="sm"
+                                      onClick={() => paginate(pageNum)}
+                                      className={`w-8 h-8 p-0 ${isCurrentPage ? 'bg-red-600 text-white' : ''}`}
+                                    >
+                                      {pageNum}
+                                    </Button>
+                                  );
+                                } else if (
+                                  pageNum === currentPage - 2 || 
+                                  pageNum === currentPage + 2
+                                ) {
+                                  return <span key={pageNum} className="px-2 flex items-center">...</span>;
+                                }
+                                
+                                return null;
+                              })}
+                            </div>
+                            
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => paginate(currentPage + 1)}
+                              disabled={currentPage === totalPages}
+                              className="ml-2"
+                              aria-label="Página siguiente"
+                            >
+                              <ChevronRightIcon />
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {/* Mostrar conteo de productos */}
+                        <div className="text-center mt-4 text-sm text-gray-500">
+                          Mostrando {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, filteredProducts.length)} de {filteredProducts.length} productos
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
+              )}
             </div>
-          )}
-          <div className="text-center mt-10 md:mt-12">
-            <Button variant="outline" onClick={() => setView("storefront")}>
-              {activeBrandFilter || selectedPriceRange || hasActiveSearchFilters || filterType ? "Ver Todos los Productos" : "Volver al Inicio"}
-            </Button>
           </div>
         </>
       )}
@@ -1344,7 +1604,9 @@ function CategoryPage({
 
 // --- Contacto Page Component ---
 function ContactoPage() { const pN = "(011) 1234-5678"; const em = "info@jcselguardian.com.ar"; const ad = "Av. Pres. Dr. Arturo Umberto Illia 2869, B1754 San Justo, Provincia de Buenos Aires"; const sc = "L-V 8-18hs, Sáb 8-13hs."; const mq = "JCS+El+Guardián+San+Justo"; const key = "YOUR_GOOGLE_MAPS_API_KEY"; // <-- REEMPLAZA CON TU API KEY REAL
- return (<div className="container mx-auto px-4 lg:px-6 py-10 md:py-16"><h1 className="text-3xl font-bold mb-8 text-center">Contacto</h1><div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12"><div className="bg-white p-6 rounded-lg shadow border border-gray-200"><h2 className="text-xl font-semibold mb-4 text-gray-800">Información de Contacto</h2><p className="text-gray-600 mb-5 text-sm">Ponte en contacto con nosotros.</p><ul className="space-y-3 text-gray-700 text-sm"><li className="flex items-start"><PhoneIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><a href={`tel:${pN.replace(/\D/g, "")}`} className="hover:text-red-700"><strong>Tel:</strong> {pN}</a></li><li className="flex items-start"><UserIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><a href={`mailto:${em}`} className="hover:text-red-700 break-all"><strong>Email:</strong> {em}</a></li><li className="flex items-start"><LocationIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><a href={`https://maps.google.com/?q=${encodeURIComponent(ad)}`} target="_blank" rel="noreferrer" className="hover:text-red-700"><strong>Dirección:</strong> {ad}</a></li><li className="flex items-start"><ClockIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><span><strong>Horario:</strong> {sc}</span></li></ul><div className="mt-6 pt-4 border-t"><h3 className="text-sm font-semibold text-gray-600 mb-2">Síguenos:</h3><div className="flex space-x-3"><a href="https://www.instagram.com/jcselguardian.oficial/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-red-600" title="Instagram"><svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12.315 2c-4.013 0-4.505.014-6.09.088C4.63.158 3.86.324 3.186.594c-.7.278-1.306.678-1.888 1.26C.716 2.44.316 3.046.038 3.746c-.27.674-.436 1.444-.508 3.03C- .55 1.807 2 2.3 2 6.314v11.372c0 4.013.014 4.505.088 6.09.074 1.586.238 2.356.508 3.03.278.7.678 1.306 1.26 1.888.582.582 1.188.982 1.888 1.26.674.27 1.444.436 3.03.508C7.807 21.986 8.3 22 12.315 22h.001c4.013 0 4.505-.014 6.09-.088 1.586-.074 2.356-.238 3.03-.508.7-.278 1.306-.678 1.888-1.26.582-.582.982-1.188 1.26-1.888.27-.674.436-1.444.508-3.03.074-1.585.088-2.077.088-6.09V6.314c0-4.013-.014-4.505-.088-6.09-.074-1.586-.238-2.356-.508-3.03-.278-.7-.678-1.306-1.26-1.888C21.56.316 20.954-.084 20.254 0c-.674-.27-1.444-.436-3.03-.508C16.82.014 16.328 0 12.315 0h-.001zm0 2.163c3.927 0 4.38.016 5.917.086 1.428.066 2.06.236 2.49.414.512.206.896.49 1.297.89.398.402.684.784.89 1.298.178.43.348 1.062.414 2.49.07 1.537.086 1.99.086 5.917s-.016 4.38-.086 5.917c-.066 1.428-.236 2.06-.414 2.49-.206.512-.49.896-.89 1.297-.402.398-.784.684-1.298.89-.43.178-1.062.348-2.49.414-1.537.07-1.99.086-5.917.086s-4.38-.016-5.917-.086c-1.428-.066-2.06-.236-2.49-.414-.512-.206-.896-.49-1.297-.89-.398-.402-.684-.784-.89-1.298-.178-.43-.348-1.062-.414-2.49-.07-1.537-.086-1.99-.086-5.917s.016-4.38.086-5.917c.066-1.428.236-2.06.414-2.49.206-.512.49-.896.89-1.297.402-.398.784-.684 1.298-.89.43-.178 1.062.348 2.49-.414C7.935 2.179 8.388 2.163 12.315 2.163zm0 12.315c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6zm0-10c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4zm6.406-4.303c-.776 0-1.406.63-1.406 1.406s.63 1.406 1.406 1.406 1.406-.63 1.406-1.406-.63-1.406-1.406-1.406z" clipRule="evenodd" /></svg></a></div></div></div><div className="bg-white p-6 rounded-lg shadow border border-gray-200"><h2 className="text-xl font-semibold mb-4 text-gray-800">Envíanos un Mensaje</h2><form onSubmit={(e: FormEvent<HTMLFormElement>) => {e.preventDefault(); alert('Formulario enviado (simulación).');}}><div className="space-y-4"><div><Label htmlFor="contact-name">Nombre</Label><Input id="contact-name" type="text" placeholder="Tu nombre" required /></div><div><Label htmlFor="contact-email">Email</Label><Input id="contact-email" type="email" placeholder="tu@email.com" required /></div><div><Label htmlFor="contact-subject">Asunto</Label><Input id="contact-subject" type="text" placeholder="Consulta sobre..." /></div><div><Label htmlFor="contact-message">Mensaje</Label><Textarea id="contact-message" placeholder="Escribe tu consulta..." rows={4} required /></div><div className="text-right pt-2"><Button type="submit" onClick={() => {}}>Enviar Mensaje</Button></div></div></form></div></div><div className="mt-12 md:mt-16"><h2 className="text-xl font-semibold mb-4 text-center text-gray-800">Nuestra Ubicación</h2><div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg overflow-hidden shadow border">{key !== "YOUR_GOOGLE_MAPS_API_KEY" && key ? (<iframe src={`https://www.google.com/maps/embed/v1/place?key=${key}&q=${encodeURIComponent(ad)}`} width="100%" height="100%" style={{ border: 0 }} allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Ubicación"></iframe>) : (<div className="flex items-center justify-center h-full text-gray-500">Mapa no disponible (Configura API Key)</div>)}</div></div></div>) }
+ return (<div className="container mx-auto px-4 lg:px-6 py-10 md:py-16"><h1 className="text-3xl font-bold mb-8 text-center">Contacto</h1><div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12"><div className="bg-white p-6 rounded-lg shadow border border-gray-200"><h2 className="text-xl font-semibold mb-4 text-gray-800">Información de Contacto</h2><p className="text-gray-600 mb-5 text-sm">Ponte en contacto con nosotros.</p><ul className="space-y-3 text-gray-700 text-sm"><li className="flex items-start"><PhoneIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><a href={`tel:${pN.replace(/\D/g, "")}`} className="hover:text-red-700"><strong>Tel:</strong> {pN}</a></li><li className="flex items-start"><UserIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><a href={`mailto:${em}`} className="hover:text-red-700 break-all"><strong>Email:</strong> {em}</a></li><li className="flex items-start"><LocationIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><a href={`https://maps.google.com/?q=${encodeURIComponent(ad)}`} target="_blank" rel="noreferrer" className="hover:text-red-700"><strong>Dirección:</strong> {ad}</a></li><li className="flex items-start"><ClockIcon className="w-4 h-4 mr-2 mt-0.5 text-red-600 shrink-0" /><span><strong>Horario:</strong> {sc}</span></li></ul><div className="mt-6 pt-4 border-t"><h3 className="text-sm font-semibold text-gray-600 mb-2">Síguenos:</h3><div className="flex space-x-3"><a href="https://www.instagram.com/jcselguardian.oficial/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-red-600" title="Instagram"><svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12.315 2c-4.013 0-4.505.014-6.09.088C4.63 0.158 3.86 0.324 3.186 0.594c-0.7.278-1.306.678-1.888 1.26C0.716 2.44 0.316 3.046 0.038 3.746c-0.27.674-.436 1.444-.508 3.03C- .55 1.807 2 2.3 2 6.314v11.372c0 4.013.014 4.505.088 6.09.074 1.586.238 2.356.508 3.03.278.7.678 1.306 1.26 1.888.582.582 1.188.982 1.888 1.26.674.27 1.444.436 3.03.508C7.807 21.986 8.3 22 12.315 22h.001c4.013 0 4.505-.014 6.09-.088 1.586-.074 2.356-.238 3.03-.508.7-.278 1.306-.678 1.888-1.26.582-.582.982-1.188 1.26-1.888.27-.674.436-1.444.508-3.03.074-1.585.088-2.077.088-6.09V6.314c0-4.013-0.014-4.505-.088-6.09-0.074-1.586-0.238-2.356-0.508-3.03-0.278-0.7-0.678-1.306-1.26-1.888C21.56 0.316 20.954 0.084 20.254 0c-0.674-0.27-1.444-0.436-3.03-0.508C16.82 0.014 16.328 0 12.315 0h-0.001zm0 2.163c3.927 0 4.38.016 5.917.086 1.428.066 2.06.236 2.49.414.512.206.896.49 1.297.89.398.402.684.784.89 1.298 0.178 0.43 0.348 1.062 0.414 2.49.07 1.537.086 1.99.086 5.917s-0.016 4.38-0.086 5.917c-0.066 1.428-0.236 2.06-0.414 2.49-0.206.512-.49.896-.89 1.297-0.402.398-.784.684-1.298.89-0.43.178-1.062.348-2.49.414-1.537.07-1.99.086-5.917.086s-4.38-.016-5.917-.086c-1.428-.066-2.06-.236-2.49-0.414-0.512-.206-0.896-.49-1.297-.89-0.398-.402-.684-.784-.89-1.298-0.178-.43-.348-1.062-.414-2.49-.07-1.537-0.086-1.99-0.086-5.917s0.016-4.38.086-5.917c0.066-1.428.236-2.06.414-2.49 0.206-.512.49-.896.89-1.297.402-.398.784-.684 1.298-.89 0.43-.178 1.062.348 2.49-.414C7.935 2.179 8.388 2.163 12.315 2.163zm0 12.315c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6zm0-10c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4zm6.406-4.303c-0.776 0-1.406 0.63-1.406 1.406s0.63 1.406 1.406 1.406 1.406-0.63 1.406-1.406-0.63-1.406-1.406-1.406z" clipRule="evenodd" /></svg></a></div></div></div><div className="bg-white p-6 rounded-lg shadow border border-gray-200"><h2 className="text-xl font-semibold mb-4 text-gray-800">Envíanos un Mensaje</h2><form onSubmit={(e: FormEvent<HTMLFormElement>) => {e.preventDefault(); alert('Formulario enviado (simulación).');}}><div className="space-y-4"><div><Label htmlFor="contact-name">Nombre</Label><Input id="contact-name" type="text" placeholder="Tu nombre" required /></div><div><Label htmlFor="contact-email">Email</Label><Input id="contact-email" type="email" placeholder="tu@email.com" required /></div><div><Label htmlFor="contact-subject">Asunto</Label><Input id="contact-subject" type="text" placeholder="Consulta sobre..." /></div><div><Label htmlFor="contact-message">Mensaje</Label><Textarea id="contact-message" placeholder="Escribe tu consulta..." rows={4} required /></div><div className="text-right pt-2"><Button type="submit" onClick={() => {}}>Enviar Mensaje</Button></div></div></form></div></div>{/* Sección de ubicación temporalmente oculta 
+<div className="mt-12 md:mt-16"><h2 className="text-xl font-semibold mb-4 text-center text-gray-800">Nuestra Ubicación</h2><div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg overflow-hidden shadow border">{key !== "YOUR_GOOGLE_MAPS_API_KEY" && key ? (<iframe src={`https://www.google.com/maps/embed/v1/place?key=${key}&q=${encodeURIComponent(ad)}`} width="100%" height="100%" style={{ border: 0 }} allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Ubicación"></iframe>) : (<div className="flex items-center justify-center h-full text-gray-500">Mapa no disponible (Configura API Key)</div>)}</div></div>
+*/}</div>) }
 
 
 // --- Cart Page Component ---
@@ -1364,10 +1626,52 @@ return (<div className="container mx-auto px-4 lg:px-6 py-8 md:py-12"><h1 classN
 interface CheckoutPageProps {
     setView: SetViewFunction;
 }
+// --- InfoModal Component ---
+interface InfoModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  message: string;
+  actionText?: string;
+}
+
+function InfoModal({ isOpen, onClose, title, message, actionText = "Entendido" }: InfoModalProps) {
+  if (!isOpen) return null;
+  
+  return (
+    <>
+      {/* Overlay */}
+      <div 
+        className="fixed inset-0 bg-black/60 z-50 transition-opacity duration-300" 
+        onClick={onClose}
+      ></div>
+      
+      {/* Modal */}
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl z-50 w-11/12 max-w-md animate-fadeIn">
+        <div className="p-5 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        </div>
+        <div className="p-5">
+          <p className="text-gray-700">{message}</p>
+        </div>
+        <div className="p-4 bg-gray-50 flex justify-end rounded-b-lg">
+          <Button
+            onClick={onClose}
+            variant="default"
+            className="bg-red-600 hover:bg-red-700"
+          >
+            {actionText}
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function CheckoutPage({ setView }: CheckoutPageProps) {
   const { cartItems, totalPrice, clearCart } = useCart();
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<string>("creditCard");
+  const [paymentMethod, setPaymentMethod] = useState<string>("mercadopago");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -1386,6 +1690,11 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [mostrarDatosFiscales, setMostrarDatosFiscales] = useState(false);
   const [orderReference, setOrderReference] = useState('');
+  
+  // Estado para el modal de información de pago con tarjeta
+  const [showCardInfoModal, setShowCardInfoModal] = useState(false);
+  const openCardInfoModal = () => setShowCardInfoModal(true);
+  const closeCardInfoModal = () => setShowCardInfoModal(false);
   
   const validCartItems = Array.isArray(cartItems) ? cartItems : [];
   
@@ -1416,7 +1725,15 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
         `${item.quantity}x ${item.name}`
       ).join(", ");
       
-      // Preparar datos del pedido
+      // MODIFICACIÓN: Si es 'creditCard', mostrar modal informativo en lugar de alert
+      if (paymentMethod === 'creditCard') {
+        console.log("APP-CONTENT: Intento de pago con 'creditCard' detectado. Mostrando modal informativo.");
+        openCardInfoModal();
+        setIsProcessing(false);
+        return; // Detener el procesamiento aquí para 'creditCard'
+      }
+      
+      // Preparar datos del pedido (esto solo se ejecutará si no es 'creditCard')
       const orderData: OrderDetails = {
         pedidoId: referenceId,
         fechaPedido: new Date().toISOString(),
@@ -1432,9 +1749,7 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
         totalPedido: totalPrice,
         detalleProductosTexto,
         estadoPedido: "Pendiente de Pago",
-        metodoPago: paymentMethod,
-        // Los IDs de Notion de los productos no los tenemos disponibles aquí
-        // Esta funcionalidad se puede agregar más adelante
+        metodoPago: paymentMethod, // Ya no será 'creditCard' en este punto
         datosFiscales: mostrarDatosFiscales ? {
           documento: formData.documento,
           tipoDocumento: formData.tipoDocumento,
@@ -1443,7 +1758,12 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
         } : undefined
       };
       
-      // Enviar datos a la API de pedidos
+      console.log("💡 CHECKOUT PAGE (app-content) - Enviando pedido a la API:", {
+        pedidoId: orderData.pedidoId,
+        metodoPago: orderData.metodoPago,
+        valorDePaymentMethodEstado: paymentMethod
+      });
+      
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -1452,18 +1772,140 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
         body: JSON.stringify(orderData),
       });
       
-      const result = await response.json();
-      
       if (!response.ok) {
-        throw new Error(result.error || 'Error al crear el pedido');
+        throw new Error(await response.text() || 'Error al crear el pedido');
       }
       
-      console.log("Orden confirmada:", { 
+      const result = await response.json();
+      
+      console.log("Orden confirmada (app-content):", { 
         orderData,
         apiResponse: result
       });
       
-      // Si todo va bien, mostrar confirmación
+      // --- INICIO DE LA MODIFICACIÓN IMPORTANTE ---
+      // Si el método de pago es 'creditCard', el CardPaymentBrick en checkout-form.tsx
+      // es el responsable de procesar el pago y actualizar el estado del pedido.
+      // Aquí, en app-content.tsx, solo hemos registrado el pedido.
+      // No creamos preferencia de MP ni redirigimos.
+      if (paymentMethod === 'creditCard') {
+        console.log("APP-CONTENT: Método de pago es 'creditCard'. Pedido registrado. El Brick en CheckoutForm se encargará del pago.");
+        // No actualizamos orderPlaced aquí. CheckoutForm lo hará después del pago exitoso del Brick.
+        // Es importante NO llamar a clearCart() aquí tampoco.
+        setIsProcessing(false); // Dejamos de mostrar "Procesando..." del botón de app-content
+        // Aquí podrías considerar mostrar un mensaje al usuario indicando que complete los datos de la tarjeta
+        // en el formulario que se muestra (el Brick).
+        // Por ejemplo: alert("Por favor, completa los datos de tu tarjeta a continuación.");
+        return; // Salimos de handleConfirmOrder de app-content para que CheckoutForm tome el control.
+      }
+      // --- FIN DE LA MODIFICACIÓN IMPORTANTE ---
+      
+      // El siguiente bloque SOLO se ejecutará si paymentMethod es 'mercadopago' (para redirección)
+      // o para otros métodos que no sean 'creditCard'.
+      if (paymentMethod === 'mercadopago') {
+        console.log("🟢 APP-CONTENT: INICIANDO INTEGRACIÓN CON MERCADO PAGO (Redirección) 🟢");
+        
+        try {
+          const mercadoPagoData = {
+            items: cartItems.map(item => ({
+              id: item.id.toString(),
+              title: item.name,
+              description: "Producto",
+              picture_url: item.imageUrl || "https://placehold.co/100",
+              quantity: item.quantity,
+              unit_price: item.price,
+              currency_id: 'ARS'
+            })),
+            payer: {
+              name: formData.name,
+              email: formData.email,
+              phone: {
+                area_code: "",
+                number: formData.phone
+              },
+              address: {
+                street_name: formData.address,
+                zip_code: formData.postalCode
+              }
+            },
+            back_url: { 
+              success: `${window.location.origin}/confirmacion?status=success`,
+              failure: `${window.location.origin}/confirmacion?status=failure`,
+              pending: `${window.location.origin}/confirmacion?status=pending`,
+            },
+            external_reference: result.order.pedidoId, // Usamos el ID del pedido creado
+            // No incluimos payment_methods.excluded_payment_types aquí, 
+            // ya que es para el flujo de redirección de MP estándar.
+          };
+          
+          console.log("APP-CONTENT: Enviando datos a /api/mercadopago (para redirección):", JSON.stringify(mercadoPagoData, null, 2));
+          
+          const mpResponse = await fetch("/api/mercadopago", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(mercadoPagoData)
+          });
+          
+          console.log("APP-CONTENT: Respuesta de /api/mercadopago:", mpResponse.status);
+          
+          if (!mpResponse.ok) {
+            const errorText = await mpResponse.text();
+            console.error("APP-CONTENT: Error con Mercado Pago (redirección):", mpResponse.status, errorText);
+            throw new Error(`Error ${mpResponse.status}: ${errorText}`);
+          }
+          
+          const mpResult = await mpResponse.json();
+          console.log("APP-CONTENT: Datos de preferencia de Mercado Pago (redirección):", mpResult);
+          
+          if (mpResult && mpResult.initPoint) {
+            console.log("APP-CONTENT: Redirigiendo a Mercado Pago (redirección):", mpResult.initPoint);
+            localStorage.setItem("mp_preference", JSON.stringify({
+              id: mpResult.preferenceId,
+              url: mpResult.initPoint,
+              timestamp: Date.now()
+            }));
+            window.location.href = mpResult.initPoint;
+            return; 
+          } else {
+            console.error("APP-CONTENT: No se recibió initPoint de Mercado Pago (redirección):", mpResult);
+            throw new Error("Respuesta incompleta de Mercado Pago (redirección)");
+          }
+        } catch (mpError) {
+          console.error("APP-CONTENT: Error en integración con Mercado Pago (redirección):", mpError);
+          alert("Hubo un problema con la conexión a Mercado Pago. Por favor, intenta nuevamente o elige otro método de pago.");
+          setIsProcessing(false);
+          return;
+        }
+      }
+      
+      // Para otros métodos de pago que no sean 'creditCard' ni 'mercadopago' (ej. efectivo, transferencia)
+      // o si la lógica de MP no hizo return.
+      // Enviar email con link de seguimiento
+      if (result.order && result.order.id) {
+        try {
+          const emailResponse = await fetch('/api/email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              orderId: result.order.id
+            }),
+          });
+          
+          if (!emailResponse.ok) {
+            console.warn("No se pudo enviar el email de confirmación:", await emailResponse.json());
+          } else {
+            console.log("Email de confirmación enviado correctamente");
+          }
+        } catch (emailError) {
+          console.error("Error al enviar email de confirmación:", emailError);
+        }
+      }
+      
+      // Si todo va bien para métodos que no son tarjeta ni redirección MP, mostrar confirmación
       setOrderPlaced(true);
       clearCart();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1486,7 +1928,22 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">¡Pedido Confirmado!</h1>
           <p className="text-gray-600 mb-6">Hemos recibido tu pedido correctamente. Nos pondremos en contacto para coordinar la entrega.</p>
-          <p className="text-sm text-gray-500 mb-8">Referencia: #{orderReference || Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
+          <p className="text-sm text-gray-500 mb-4">Referencia: #{orderReference || Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
+
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6 text-left">
+            <div className="flex items-start gap-3 mb-2">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-600">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-1">Seguimiento por Email</h3>
+                <p className="text-sm text-gray-600">Te hemos enviado un correo electrónico con un enlace para seguir el estado de tu pedido. Mantente al tanto de las actualizaciones.</p>
+              </div>
+            </div>
+          </div>
+          
           <Button variant="default" onClick={() => setView("storefront")} className="bg-red-600 hover:bg-red-700 px-8">
             Volver a la Tienda
           </Button>
@@ -1499,9 +1956,30 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
     return <div className="container mx-auto p-12 text-center">Redirigiendo...</div>;
   }
 
+  // Check if we're using credit card payment and should show the CheckoutForm
+  if (paymentMethod === 'tarjeta') {
+    return (
+      <CheckoutForm 
+        setView={setView}
+        cartItems={validCartItems}
+        totalPrice={totalPrice}
+        formData={formData}
+      />
+    );
+  }
+  
   return (
     <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
       <h1 className="text-2xl md:text-3xl font-bold mb-8 text-center">Finalizar Compra</h1>
+      
+      {/* Modal informativo para pago con tarjeta */}
+      <InfoModal 
+        isOpen={showCardInfoModal}
+        onClose={closeCardInfoModal}
+        title="Información de Pago"
+        message="Para realizar un pago con tarjeta de crédito o débito, por favor selecciona la opción de 'Mercado Pago'. Serás redirigido a la plataforma segura de Mercado Pago para completar tu compra."
+        actionText="Entendido"
+      />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
         {/* Panel derecho - Resumen del pedido */}
@@ -1801,7 +2279,12 @@ function CheckoutPage({ setView }: CheckoutPageProps) {
                       name="paymentMethod" 
                       value="creditCard" 
                       checked={paymentMethod === 'creditCard'} 
-                      onChange={() => setPaymentMethod('creditCard')} 
+                      onChange={() => {
+                        console.log("CHECKOUT APP-CONTENT: Seleccionando método de pago creditCard");
+                        setPaymentMethod('creditCard');
+                        // Mostrar el modal informativo cuando se selecciona este método
+                        openCardInfoModal();
+                      }} 
                       className="w-4 h-4 text-red-600" 
                     />
                     <span className="ml-3 font-medium">Tarjeta de crédito/débito</span>
@@ -2045,7 +2528,7 @@ interface AdminDashboardProps {
 }
 // ** CORRECCIÓN ESTRUCTURAL Y DE TIPOS **
 const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
-  const { products, addProduct, updateProduct, deleteProduct, loadProducts, loading } = useProducts();
+  const { products, addProduct, updateProduct, deleteProduct, loadProducts, loading: productsLoading } = useProducts(); // Renombrar loading
   const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -2112,7 +2595,7 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
     } else if (activeTab === 'orders') {
       loadOrders();
     }
-  }, [activeTab]);
+  }, [activeTab, loadProducts]); // Añadir loadProducts a dependencias
   
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => { // Tipar evento
     const { name, value } = e.target;
@@ -2211,7 +2694,7 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Panel de Administración</h1>
         <Button onClick={handleLogout} variant="outline" size="sm">Cerrar Sesión</Button>
-      </div>
+        </div>
       
       <div className="mb-6 border-b">
         <div className="flex space-x-4">
@@ -2242,26 +2725,26 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
               >
                 <PlusIcon />
                 Nuevo Producto
-              </Button>
+          </Button>
               <Button 
                 onClick={() => loadProducts()}
                 variant="outline"
                 size="sm"
-                disabled={loading}
+                disabled={productsLoading}
               >
-                {loading ? 'Cargando...' : 'Recargar'}
+                {productsLoading ? 'Cargando...' : 'Recargar'}
               </Button>
             </div>
           </div>
           
-          {showForm && (
+        {showForm && (
             <div className="mb-6 bg-white p-6 border rounded-lg shadow-sm">
               <h3 className="text-lg font-medium mb-4">{editingProduct ? 'Editar Producto' : 'Nuevo Producto'}</h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Form fields... */}
                 {/* ... existing code ... */}
               </form>
-            </div>
+                </div>
           )}
           
           <div className="bg-white border rounded-lg overflow-hidden">
@@ -2277,9 +2760,11 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {loading ? (
+                  {productsLoading ? ( // Usar productsLoading
                     <tr>
-                      <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Cargando productos...</td>
+                      <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                        <GenericLoadingSpinner text="Cargando productos..." />
+                      </td>
                     </tr>
                   ) : products.length === 0 ? (
                     <tr>
@@ -2297,12 +2782,12 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
                                 className="h-full w-full object-contain"
                                 onError={handleAdminImageError}
                               />
-                            </div>
+                   </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900 line-clamp-1">{product.name}</div>
                               <div className="text-xs text-gray-500">{product.id}</div>
-                            </div>
-                          </div>
+                </div>
+                  </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">${product.price.toLocaleString('es-AR')}</div>
@@ -2383,7 +2868,9 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {loadingOrders ? (
                     <tr>
-                      <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">Cargando pedidos...</td>
+                      <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                        <GenericLoadingSpinner text="Cargando pedidos..." />
+                      </td>
                     </tr>
                   ) : orders.length === 0 ? (
                     <tr>
@@ -2394,7 +2881,7 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
                       <tr key={order.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{order.id}</div>
-                        </td>
+                      </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
                             {new Date(order.fecha).toLocaleDateString('es-AR', {
@@ -2405,7 +2892,7 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
                               minute: '2-digit'
                             })}
                           </div>
-                        </td>
+                      </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">{order.cliente}</div>
                           <div className="text-xs text-gray-500">{order.email}</div>
@@ -2436,8 +2923,8 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ setView, setIsAdmin }) => {
                           >
                             Ver
                           </button>
-                        </td>
-                      </tr>
+                      </td>
+                    </tr>
                     ))
                   )}
                 </tbody>
@@ -2498,8 +2985,7 @@ function FloatingMiniCart({ onClick }: FloatingMiniCartProps) {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      // <<< Añadida clase animate-subtle-glow y ajustado shadow/border base >>>
-      className={`fixed bottom-6 left-6 z-40 group flex items-center transition-all duration-500 ease-in-out rounded-xl border border-gray-800 shadow-xl animate-subtle-glow ${ // Añadido rounded-xl, border, shadow aquí
+      className={`fixed bottom-6 left-6 z-40 group flex items-center transition-all duration-500 ease-in-out rounded-xl shadow-xl animate-subtle-glow ${
         isHovered ? 'translate-y-[-4px]' : ''
       }`}
       aria-label={`Carrito con ${totalItems} items`}
@@ -2509,15 +2995,15 @@ function FloatingMiniCart({ onClick }: FloatingMiniCartProps) {
         {totalItems}
       </div>
       
-      {/* Main container - Ahora sin borde ni sombra propios */}
-      <div className="bg-gradient-to-r from-gray-900 to-black text-white rounded-xl overflow-hidden flex items-center"> 
-        {/* Icon container */}
-        <div className="bg-red-600 p-3">
+      {/* Main container */}
+      <div className="bg-gradient-to-r from-gray-900 to-black text-white rounded-xl overflow-hidden flex items-center border border-gray-800"> 
+        {/* Icon container - Ajustado a 14 de ancho para mejor balance */}
+        <div className="bg-red-600 h-12 w-14 flex items-center justify-center">
           <CartIcon className="w-5 h-5" />
         </div>
         
-        {/* Price info */}
-        <div className="px-4 py-2">
+        {/* Price info - Mantenido como está */}
+        <div className="px-4 py-2.5">
           <div className="text-xs opacity-80 font-medium">Total de compra</div>
           <div className="text-base font-bold">
             ${totalPrice.toLocaleString("es-AR")}
@@ -2525,12 +3011,11 @@ function FloatingMiniCart({ onClick }: FloatingMiniCartProps) {
         </div>
       </div>
       
-      {/* Decorative shine effect (mantenido como estaba) */}
-      <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-out pointer-events-none`}></div>
+      {/* Decorative shine effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-out pointer-events-none rounded-xl"></div>
     </button>
   );
 }
-
 
 // ===============================================
 //      APP WRAPPER Y CONTENT (Maneja estado y renderizado)
@@ -2756,45 +3241,57 @@ function App() {
     </ProductProvider>
   )
 }
+
+// Move the API handlers to a separate export object
+const apiHandlers = {
+  async POST(req: Request) {
+    try {
+      const body = await req.json();           // Omit<Product, 'id'>
+      const newProduct = await createProduct(body);
+      if (!newProduct) {
+        return NextResponse.json({ error: 'Create failed' }, { status: 500 });
+      }
+      return NextResponse.json({ product: newProduct }, { status: 201 });
+    } catch (err: any) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: err.message },
+        { status: 400 },
+      );
+    }
+  },
+
+  async PUT(
+    req: Request,
+    { params }: { params: { id: string } },
+  ) {
+    try {
+      const data = await req.json();      // Product sin id
+      const ok = await updateProduct({ ...data, id: params.id });
+      if (!ok) throw new Error('Update failed');
+      return NextResponse.json({ ok: true });
+    } catch (err: any) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+  },
+
+  async DELETE(
+    _req: Request,
+    { params }: { params: { id: string } },
+  ) {
+    const ok = await deleteProduct(params.id);
+    return ok
+      ? NextResponse.json({ ok: true })
+      : NextResponse.json({ error: 'Delete failed' }, { status: 500 });
+  }
+};
+
+// Export the components and API handlers
+export { AppContent, apiHandlers };
+
+// Make AppContent the default export
 export default App;
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();           // Omit<Product, 'id'>
-    const newProduct = await createProduct(body);
-    if (!newProduct) {
-      return NextResponse.json({ error: 'Create failed' }, { status: 500 });
-    }
-    return NextResponse.json({ product: newProduct }, { status: 201 });
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: 'Invalid request', details: err.message },
-      { status: 400 },
-    );
-  }
-}
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } },
-) {
-  try {
-    const data = await req.json();      // Product sin id
-    const ok = await updateProduct({ ...data, id: params.id });
-    if (!ok) throw new Error('Update failed');
-    return NextResponse.json({ ok: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
-  }
-}
 
-export async function DELETE(
-  _req: Request,
-  { params }: { params: { id: string } },
-) {
-  const ok = await deleteProduct(params.id);
-  return ok
-    ? NextResponse.json({ ok: true })
-    : NextResponse.json({ error: 'Delete failed' }, { status: 500 });
-}
+
 

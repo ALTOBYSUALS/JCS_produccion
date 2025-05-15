@@ -55,6 +55,16 @@ export interface OrderDetails {
     razonSocial?: string; // Para facturas a empresas
     tipoFactura: string; // "A", "B", "C"
   };
+  // Campos para seguimiento
+  trackingToken?: string; // token único para seguimiento
+  trackingUrl?: string; // URL completa con el token
+  estadoHistorial?: Array<{
+    estado: string;
+    fecha: string;
+    notas?: string;
+  }>;
+  codigoSeguimiento?: string; // código de la empresa de transporte (OCA, etc.)
+  empresaEnvio?: string; // "OCA", "Correo Argentino", etc.
 }
 
 // Tipos para View y Contexto de setView

@@ -19,6 +19,7 @@ interface CartSidebarProps {
   removeFromCart: (id: number) => void
   updateQuantity: (id: number, quantity: number) => void
   totalPrice: number
+  setView: (view: string) => void
 }
 
 const CartSidebar: React.FC<CartSidebarProps> = ({
@@ -29,6 +30,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
   removeFromCart,
   updateQuantity,
   totalPrice,
+  setView,
 }) => {
   return (
     <div
@@ -120,7 +122,10 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
                 <span className="font-semibold">Total:</span>
                 <span className="font-bold">${totalPrice.toLocaleString("es-AR")}</span>
               </div>
-              <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-2 transition-colors duration-200">
+              <button 
+                onClick={() => setView("checkout")}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-2 transition-colors duration-200"
+              >
                 Finalizar Compra
               </button>
               <button

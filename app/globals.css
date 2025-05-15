@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* postcss-ignore */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,6 +26,9 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+    
+    /* Color rojo de la marca JCS El Guardián */
+    --brand-red: 0, 80%, 45%;
   }
 
   .dark {
@@ -56,6 +61,36 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Loading Spinner - JCS El Guardián Brand Color */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: hsl(0, 80%, 45%); /* Color rojo de la marca */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  margin-top: 1rem;
+  font-family: var(--font-uncial-antiqua);
+  color: hsl(0, 80%, 45%); /* Color rojo de la marca */
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
 @layer utilities {
@@ -248,5 +283,13 @@
 
   .touch-spacing > * + * {
     margin-top: 1rem;
+  }
+}
+
+/* Animación de ripple para el componente WhyChooseUs */
+@keyframes ripple {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
   }
 }

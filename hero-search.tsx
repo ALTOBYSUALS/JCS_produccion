@@ -93,7 +93,7 @@ export default function HeroSearch() {
     }
   }
 
-  const handleTabChange = (type) => {
+  const handleTabChange = (type: "neumaticos" | "llantas") => {
     setSearchType(type)
   }
 

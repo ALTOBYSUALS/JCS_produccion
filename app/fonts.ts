@@ -1,4 +1,4 @@
-import { Inter, Space_Mono, Bebas_Neue } from 'next/font/google';
+import { Inter, Space_Mono, Bebas_Neue, Uncial_Antiqua } from 'next/font/google';
 
 // Fuente principal (Inter)
 export const inter = Inter({
@@ -21,4 +21,12 @@ export const bebasNeue = Bebas_Neue({
   weight: ['400'],
   display: 'swap',
   variable: '--font-bebas-neue',
+});
+
+// Fuente medieval para navbar (Uncial Antiqua)
+export const uncialAntiqua = Uncial_Antiqua({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+  variable: '--font-uncial-antiqua',
 }); 
