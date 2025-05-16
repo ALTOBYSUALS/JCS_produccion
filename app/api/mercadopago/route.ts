@@ -114,8 +114,8 @@ export async function POST(req: Request) {
         ...(backUrlDetails.pending ? { pending: backUrlDetails.pending } : {})
       },
       external_reference: data.externalReference,
-      notification_url: process.env.NEXT_PUBLIC_SITE_URL 
-        ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/mercadopago/webhook` 
+      notification_url: process.env.NEXT_PUBLIC_SITE_URL
+        ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '')}/api/mercadopago/webhook`
         : undefined,
     };
     
