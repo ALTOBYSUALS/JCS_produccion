@@ -1,4 +1,4 @@
-import { Inter, Space_Mono, Bebas_Neue, Uncial_Antiqua } from 'next/font/google';
+import { Inter, Space_Mono, Bebas_Neue, Uncial_Antiqua, Anton } from 'next/font/google';
 
 // Fuente principal (Inter)
 export const inter = Inter({
@@ -29,4 +29,12 @@ export const uncialAntiqua = Uncial_Antiqua({
   weight: ['400'],
   display: 'swap',
   variable: '--font-uncial-antiqua',
+});
+
+// Fuente impactante para títulos principales (Anton)
+export const anton = Anton({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+  variable: '--font-anton',
 }); 

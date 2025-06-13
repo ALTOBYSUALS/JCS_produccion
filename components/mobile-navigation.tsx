@@ -47,7 +47,7 @@ export default function MobileNavigation({
           onClick={() => handleNavigation("storefront")}
         >
           <img 
-            src="https://res.cloudinary.com/dt5pkdr0k/image/upload/v1745035390/image_1_yd8doa.png" 
+            src="https://pub-13fdc27487374a41a3033c5799078fd0.r2.dev/image_1_zvzh9f.png" 
             alt="Logo JCS El Guardián" 
             className="h-8 w-auto" 
           />
@@ -84,11 +84,11 @@ export default function MobileNavigation({
         {/* Cabecera del menú */}
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <div className="cursor-pointer" onClick={() => handleNavigation("storefront")}>
-            <img 
-              src="https://res.cloudinary.com/dt5pkdr0k/image/upload/v1745035390/image_1_yd8doa.png" 
-              alt="Logo JCS El Guardián" 
-              className="h-8 w-auto" 
-            />
+                          <img 
+                src="https://pub-13fdc27487374a41a3033c5799078fd0.r2.dev/image_1_zvzh9f.png" 
+                alt="Logo JCS El Guardián" 
+                className="h-8 w-auto" 
+              />
           </div>
           <button
             onClick={() => setIsMenuOpen(false)}
@@ -118,7 +118,7 @@ export default function MobileNavigation({
         <div className="p-4 border-t border-gray-100">
           <div className="flex items-center space-x-2 mb-4">
             <Phone className="h-5 w-5 text-red-600" />
-            <a href="tel:+541146510507" className="text-sm font-medium">+54 11 4651-0507</a>
+            <a href="tel:+541144820369" className="text-sm font-medium">4482 - 0369 | 0463</a>
           </div>
           <Button
             onClick={() => handleNavigation("contacto")}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { uncialAntiqua } from '@/app/fonts'
+import { uncialAntiqua, anton } from '@/app/fonts'
 import React from 'react'
 import { Inter } from 'next/font/google'
 import { Bebas_Neue } from 'next/font/google'
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} ${uncialAntiqua.variable} font-sans antialiased bg-gray-100 text-gray-800`}>
+    <html lang="es" className={`${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} ${uncialAntiqua.variable} ${anton.variable} font-sans antialiased bg-gray-100 text-gray-800`}>
       <head>
         {/* El favicon se manejará a través del objeto metadata en Next.js 13+ */}
         {/* Si se necesitara un control más directo o para versiones anteriores, se usaría:
