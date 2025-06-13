@@ -21,6 +21,7 @@ export default function MobileNavigation({
     { label: "Llantas", view: "llantas" },
     { label: "Accesorios", view: "accesorios" },
     { label: "Servicios", view: "servicios" },
+    { label: "Nosotros", view: "nosotros" },
     { label: "Contacto", view: "contacto" },
     // { label: "Marcas", view: "shopByBrand" }, // Temporalmente oculto
   ]

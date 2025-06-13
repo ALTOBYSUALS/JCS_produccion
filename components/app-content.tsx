@@ -66,7 +66,7 @@ interface CartItem {
 }
 
 // Tipos para View y Contexto de setView
-type ViewName = 'storefront' | 'neumaticos' | 'llantas' | 'accesorios' | 'servicios' | 'contacto' | 'shopByBrand' | 'productDetail' | 'cart' | 'checkout' | 'adminLogin' | 'adminDashboard' |
+type ViewName = 'storefront' | 'neumaticos' | 'llantas' | 'accesorios' | 'servicios' | 'contacto' | 'nosotros' | 'shopByBrand' | 'productDetail' | 'cart' | 'checkout' | 'adminLogin' | 'adminDashboard' |
                 'llantas_deportivas' | 'llantas_chapa' | 'llantas_r14' | 'llantas_r15' | 'llantas_r17' |
                 'servicio_alineacion' | 'servicio_reparacion' | 'servicio_aceite' | 'servicio_frenos' | 'servicio_suspension' | 'servicio_mecanica';
 
@@ -781,6 +781,7 @@ function Header({ setView, toggleCart }: HeaderProps) {
     { label: "Llantas", view: "llantas" },
     { label: "Accesorios", view: "accesorios" },
     { label: "Servicios", view: "servicios" },
+    { label: "Nosotros", view: "nosotros" },
     { label: "Contacto", view: "contacto" },
     // { label: "Marcas", view: "shopByBrand" }, // Temporalmente oculto
   ];
@@ -920,12 +921,12 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
           <SolDeMayo className="text-yellow-300/60" size={32} />
         </div>
         
-                 {/* Partículas sutiles y minimalistas */}
-         <div className="floating-particle absolute top-24 left-12 w-2 h-2 bg-white/20 rounded-full opacity-40 animate-float-1"></div>
-         <div className="floating-particle absolute top-48 right-24 w-1 h-1 bg-white/30 rounded-full opacity-50 animate-float-2"></div>
-         <div className="floating-particle absolute bottom-36 left-1/4 w-1 h-1 bg-red-300/20 rounded-full opacity-30 animate-float-3"></div>
-         <div className="floating-particle absolute top-64 right-1/3 w-2 h-2 bg-white/15 rounded-full opacity-35 animate-float-1"></div>
-         <div className="floating-particle absolute bottom-28 right-16 w-1 h-1 bg-white/25 rounded-full opacity-40 animate-float-2"></div>
+        {/* Partículas sutiles y minimalistas */}
+        <div className="floating-particle absolute top-24 left-12 w-2 h-2 bg-white/20 rounded-full opacity-40 animate-float-1"></div>
+        <div className="floating-particle absolute top-48 right-24 w-1 h-1 bg-white/30 rounded-full opacity-50 animate-float-2"></div>
+        <div className="floating-particle absolute bottom-36 left-1/4 w-1 h-1 bg-red-300/20 rounded-full opacity-30 animate-float-3"></div>
+        <div className="floating-particle absolute top-64 right-1/3 w-2 h-2 bg-white/15 rounded-full opacity-35 animate-float-1"></div>
+        <div className="floating-particle absolute bottom-28 right-16 w-1 h-1 bg-white/25 rounded-full opacity-40 animate-float-2"></div>
         
         {/* Sol de Mayo adicional con rotación */}
         <div className="absolute bottom-10 left-10 opacity-15 animate-spin-slow">
@@ -945,11 +946,14 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
       <div className="container mx-auto px-4 lg:px-6 py-8 md:py-12 text-center relative z-10 flex flex-col justify-center min-h-full">
         {/* Título principal con tipografía irlandesa elegante y profesional */}
         <div className="flex-shrink-0 mb-4 md:mb-6">
-          {/* Badge del 30° Aniversario con efecto más sutil */}
+          {/* Badge del 30° Aniversario elegante y dorado */}
           <div className="flex justify-center mb-3 md:mb-4">
             <div 
-              className="relative bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 text-white px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider shadow-lg border border-gray-500/50"
-              style={{ fontFamily: 'var(--font-anniversary-elegant)' }}
+              className="relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider shadow-lg border border-yellow-400/50"
+              style={{ 
+                fontFamily: 'var(--font-anniversary-elegant)',
+                boxShadow: '0 0 20px rgba(255,215,0,0.4)'
+              }}
             >
               <span className="relative">✨ 30° ANIVERSARIO ✨</span>
             </div>
@@ -1783,7 +1787,7 @@ function Storefront({ setView, handleSearch }: StorefrontProps) {
   const scroll = (offset: number) => { if (scrollContainerRef.current) scrollContainerRef.current.scrollBy({ left: offset, behavior: "smooth" }); }; 
   const carouselItems: CarouselItem[] = [
     { 
-      imageUrl: "https://res.cloudinary.com/dt5pkdr0k/image/upload/v1745032889/image_fx_55_ymeuvt.png", 
+      imageUrl: "https://pub-13fdc27487374a41a3033c5799078fd0.r2.dev/20250513_1654_Promocio%CC%81n_JSC_El_Guardia%CC%81n_simple_compose_01jv5kbjyqefgacz81gwrg0xvr_1_vfk4u5.png", 
       title: "🏆 Llantas Premium del 30° Aniversario", 
       subtitle: "Elegancia y rendimiento excepcional para tu vehículo. Financiación especial disponible.", 
       buttonText: "Explorar Llantas Premium", 
@@ -2916,6 +2920,290 @@ function ContactoPage() {
     </div>
   </div>
   ) 
+}
+
+
+// --- Nosotros Page Component ---
+function NosotrosPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-gray-900 to-black">
+      {/* Hero Section con diseño moderno y atractivo */}
+      <div className="relative min-h-[85vh] flex items-center text-white overflow-hidden">
+        {/* Fondo animado con efectos sutiles */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-gray-900 to-black"></div>
+        
+        {/* Elementos geométricos modernos */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 right-20 w-32 h-32 border-2 border-yellow-400/30 rounded-xl rotate-45 animate-float"></div>
+          <div className="absolute bottom-32 left-16 w-24 h-24 border-2 border-red-400/30 rounded-full animate-float-reverse"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-r from-yellow-400/20 to-red-400/20 rounded-lg animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/3 w-20 h-20 border border-white/20 rounded-full animate-float"></div>
+        </div>
+        
+        {/* Líneas decorativas */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-400/50 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-red-400/50 to-transparent"></div>
+        </div>
+        
+        {/* Sol de Mayo elegante */}
+        <div className="absolute top-12 right-12 opacity-20 animate-spin-slow">
+          <SolDeMayo className="text-yellow-300" size={48} />
+        </div>
+        
+        <div className="container mx-auto px-4 lg:px-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Contenido principal */}
+            <div className="text-center lg:text-left">
+              {/* Badge del 30° Aniversario más llamativo */}
+              <div className="flex justify-center lg:justify-start mb-6">
+                <div className="relative">
+                  <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black px-6 py-3 rounded-full text-sm font-black tracking-wider shadow-2xl border-2 border-yellow-300">
+                    <span className="relative z-10 flex items-center gap-2">
+                      🏆 30 AÑOS DE EXCELENCIA 🏆
+                    </span>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 rounded-full blur-lg opacity-60 scale-110"></div>
+                </div>
+              </div>
+              
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
+                <span className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-2xl block"
+                      style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  NOSOTROS
+                </span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-yellow-100 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                Conocé la historia de <span className="text-yellow-300 font-bold">JCS El Guardián</span> y descubrí por qué somos tu mejor opción
+              </p>
+              
+              {/* Características destacadas */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 mb-8">
+                <div className="bg-red-500/20 backdrop-blur-sm border border-red-400/30 px-4 py-2 rounded-full text-red-200 text-sm font-semibold">
+                  ✨ Desde 1995
+                </div>
+                <div className="bg-yellow-500/20 backdrop-blur-sm border border-yellow-400/30 px-4 py-2 rounded-full text-yellow-200 text-sm font-semibold">
+                  🎯 San Justo, BA
+                </div>
+                <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 px-4 py-2 rounded-full text-blue-200 text-sm font-semibold">
+                  💪 Líder del sector
+                </div>
+              </div>
+            </div>
+            
+            {/* Imagen/Logo Area */}
+            <div className="relative flex justify-center">
+              <div className="relative">
+                {/* Círculo decorativo de fondo */}
+                <div className="w-80 h-80 bg-gradient-to-br from-red-500/30 via-yellow-500/20 to-red-500/30 rounded-full blur-3xl absolute inset-0 animate-pulse"></div>
+                
+                {/* Logo JCS grande */}
+                <div className="relative z-10 w-64 h-64 bg-gradient-to-br from-white via-gray-100 to-white rounded-full flex items-center justify-center shadow-2xl border-4 border-yellow-400/50">
+                  <div className="text-center">
+                    <div className="text-6xl font-black text-red-600 mb-2">JCS</div>
+                    <div className="text-sm font-bold text-gray-700 tracking-wider">EL GUARDIÁN</div>
+                    <div className="text-xs text-yellow-600 font-semibold mt-1">30 AÑOS</div>
+                  </div>
+                </div>
+                
+                {/* Elementos decorativos orbitales */}
+                <div className="absolute inset-0 animate-spin-slow">
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-4 h-4 bg-yellow-400 rounded-full shadow-lg"></div>
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 w-4 h-4 bg-red-400 rounded-full shadow-lg"></div>
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 w-4 h-4 bg-blue-400 rounded-full shadow-lg"></div>
+                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 w-4 h-4 bg-green-400 rounded-full shadow-lg"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Sección de contenido mejorada */}
+      <div className="relative bg-gradient-to-b from-black via-gray-900 to-slate-800 py-20">
+        <div className="container mx-auto px-4 lg:px-6">
+          
+          {/* ¿Por qué elegirnos? - Rediseñado */}
+          <div className="max-w-6xl mx-auto mb-20">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-black mb-6">
+                <span className="bg-gradient-to-r from-red-400 via-red-500 to-red-600 bg-clip-text text-transparent"
+                      style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  ¿POR QUÉ ELEGIRNOS?
+                </span>
+              </h2>
+              <div className="w-32 h-1 bg-gradient-to-r from-red-500 to-yellow-500 mx-auto mb-8"></div>
+              <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+                Tres décadas de experiencia nos respaldan como la mejor opción en neumáticos y servicios automotrices
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-gray-800/80 to-slate-800/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-700/50 shadow-2xl">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+                      <ShieldCheckIcon className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2">Experiencia Consolidada</h3>
+                      <p className="text-gray-300 leading-relaxed">
+                        Contamos con un equipo altamente calificado, cuya experiencia y especialización se ha consolidado a lo largo de estos años en el rubro.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-r from-gray-800/80 to-slate-800/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-700/50 shadow-2xl">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+                      <StoreIcon className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2">Satisfacción Garantizada</h3>
+                      <p className="text-gray-300 leading-relaxed">
+                        Nuestro propósito es asegurar la satisfacción y tranquilidad de nuestros clientes en cada servicio que brindamos.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Stats impressionantes */}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-red-500/20 to-red-600/10 backdrop-blur-sm border border-red-400/30 p-6 rounded-2xl text-center">
+                  <div className="text-4xl font-black text-red-400 mb-2">30</div>
+                  <div className="text-white font-semibold">Años de experiencia</div>
+                </div>
+                <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 backdrop-blur-sm border border-yellow-400/30 p-6 rounded-2xl text-center">
+                  <div className="text-4xl font-black text-yellow-400 mb-2">1000+</div>
+                  <div className="text-white font-semibold">Clientes satisfechos</div>
+                </div>
+                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-sm border border-blue-400/30 p-6 rounded-2xl text-center">
+                  <div className="text-4xl font-black text-blue-400 mb-2">24/7</div>
+                  <div className="text-white font-semibold">Asistencia disponible</div>
+                </div>
+                <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-sm border border-green-400/30 p-6 rounded-2xl text-center">
+                  <div className="text-4xl font-black text-green-400 mb-2">100%</div>
+                  <div className="text-white font-semibold">Garantía de calidad</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Nuestros Valores - Rediseñado */}
+          <div className="max-w-6xl mx-auto mb-20">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-black mb-6">
+                <span className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent"
+                      style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  NUESTROS VALORES
+                </span>
+              </h2>
+              <div className="w-32 h-1 bg-gradient-to-r from-yellow-500 to-red-500 mx-auto mb-8"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="group relative bg-gradient-to-br from-red-500/10 to-red-600/5 backdrop-blur-sm border border-red-400/30 p-8 rounded-2xl text-center hover:border-red-400/60 transition-all duration-300 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                    <ClockIcon className="w-10 h-10" />
+                  </div>
+                  <h3 className="font-black text-2xl text-white mb-4">RAPIDEZ</h3>
+                  <p className="text-gray-300 leading-relaxed">Atención ágil y eficiente para que no pierdas tiempo. Valoramos cada minuto de nuestros clientes.</p>
+                </div>
+              </div>
+              
+              <div className="group relative bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 backdrop-blur-sm border border-yellow-400/30 p-8 rounded-2xl text-center hover:border-yellow-400/60 transition-all duration-300 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                    <ShieldCheckIcon className="w-10 h-10" />
+                  </div>
+                  <h3 className="font-black text-2xl text-white mb-4">CALIDAD</h3>
+                  <p className="text-gray-300 leading-relaxed">Productos y servicios de primera línea. Solo trabajamos con las mejores marcas del mercado.</p>
+                </div>
+              </div>
+              
+              <div className="group relative bg-gradient-to-br from-blue-500/10 to-blue-600/5 backdrop-blur-sm border border-blue-400/30 p-8 rounded-2xl text-center hover:border-blue-400/60 transition-all duration-300 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                    <TruckIcon className="w-10 h-10" />
+                  </div>
+                  <h3 className="font-black text-2xl text-white mb-4">CONFIANZA</h3>
+                  <p className="text-gray-300 leading-relaxed">30 años de respaldo y experiencia en el rubro. Somos tu socio de confianza en el camino.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action mejorado */}
+          <div className="max-w-4xl mx-auto">
+            <div className="relative bg-gradient-to-r from-gray-900 via-black to-gray-900 p-12 md:p-16 rounded-3xl shadow-2xl text-center overflow-hidden border border-gray-700/50">
+              {/* Efectos de fondo */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 via-yellow-500/10 to-red-500/10"></div>
+              <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-red-400/60 to-transparent"></div>
+              
+              {/* Sol de Mayo decorativo */}
+              <div className="absolute top-6 left-6 opacity-20">
+                <SolDeMayo className="text-yellow-300" size={32} />
+              </div>
+              <div className="absolute bottom-6 right-6 opacity-20">
+                <ArgentinaFlag className="w-8 h-6" />
+              </div>
+              
+              <div className="relative z-10">
+                <h2 className="text-4xl md:text-5xl font-black mb-6">
+                  <span className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent block mb-2"
+                        style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    ¿Necesitás ayuda?
+                  </span>
+                  <span className="text-white text-2xl md:text-3xl font-normal">
+                    Estamos aquí para vos
+                  </span>
+                </h2>
+                
+                <p className="text-gray-300 text-xl mb-8 max-w-2xl mx-auto">
+                  Tenemos personal especializado para brindarte toda la información que necesitás sobre nuestros productos y servicios
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Button 
+                    className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 text-lg"
+                    onClick={() => window.location.href = 'https://wa.me/5491144820369'}
+                  >
+                    <WhatsAppIcon className="w-6 h-6 mr-2" />
+                    CONTACTAR AHORA
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold px-8 py-4 rounded-full transition-all duration-300 text-lg"
+                    onClick={() => window.location.href = 'tel:44820369'}
+                  >
+                    <PhoneIcon className="w-6 h-6 mr-2" />
+                    LLAMAR
+                  </Button>
+                </div>
+                
+                <div className="mt-8 text-center">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400/20 to-red-400/20 backdrop-blur-sm border border-yellow-400/30 px-6 py-3 rounded-full">
+                    <span className="text-yellow-300 font-bold text-lg">
+                      Rapidez, Calidad y Confianza desde 1995
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 
@@ -4504,6 +4792,7 @@ function AppContent() {
       case "servicio_frenos": case "servicio_suspension": case "servicio_mecanica": CurrentPageComponent = CategoryPage; specificProps = { category: "servicio", categoryLabel: "Servicios" }; break;
       // Standard Pages
       case "contacto": CurrentPageComponent = ContactoPage; break;
+      case "nosotros": CurrentPageComponent = NosotrosPage; break;
       case "cart": CurrentPageComponent = CartPage; break;
       case "checkout": CurrentPageComponent = CheckoutPage; break;
       // Default / Storefront
