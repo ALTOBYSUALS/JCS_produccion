@@ -579,7 +579,7 @@ interface CustomHeroSearchProps {
 function CustomHeroSearch({ onSearch }: CustomHeroSearchProps) { const [activeTab, setActiveTab] = useState<'neumaticos' | 'llantas'>("neumaticos"); const [ancho, setAncho] = useState(""); const [perfil, setPerfil] = useState(""); const [diametro, setDiametro] = useState(""); const anchos = ["165", "175", "185", "195", "205", "215", "225", "235", "245", "255", "265", "33"]; const perfiles = ["12.5", "35", "40", "45", "50", "55", "60", "65", "70", "75"]; const diametros = ["12", "13", "14", "15", "16", "17", "18", "19", "20"];
 // Tipar evento ChangeEvent<HTMLSelectElement>
 // ** CORRECCIÓN DE LINTER **
-const handleSearchClick = () => { const filters: Record<string, string> = { category: activeTab }; if (ancho) filters.ancho = ancho; if (perfil) filters.perfil = perfil; if (diametro) filters.diametro = diametro; if (activeTab === 'llantas') { delete filters.perfil; } onSearch(filters); }; return (<div className="mt-6 md:mt-8 max-w-lg mx-auto"><div className="flex justify-center mb-6"><div className="bg-white/10 backdrop-blur rounded-full p-1 border border-white/20"><button onClick={() => setActiveTab("neumaticos")} className={`px-6 py-2 text-sm font-medium rounded-full transition-all duration-200 ${activeTab === "neumaticos" ? "bg-white text-gray-900 shadow-lg" : "text-white hover:text-yellow-300"}`}>NEUMÁTICOS</button><button onClick={() => setActiveTab("llantas")} className={`px-6 py-2 text-sm font-medium rounded-full transition-all duration-200 ${activeTab === "llantas" ? "bg-white text-gray-900 shadow-lg" : "text-white hover:text-yellow-300"}`}>LLANTAS</button></div></div><div key={activeTab} className="animate-fadeIn space-y-4">{activeTab === "neumaticos" && (<>{/* Filtro minimalista y elegante */}
+const handleSearchClick = () => { const filters: Record<string, string> = { category: activeTab }; if (ancho) filters.ancho = ancho; if (perfil) filters.perfil = perfil; if (diametro) filters.diametro = diametro; if (activeTab === 'llantas') { delete filters.perfil; } onSearch(filters); }; return (<div className="mt-6 md:mt-8 max-w-lg mx-auto border-2 border-red-500/30 rounded-lg p-4 backdrop-blur-sm bg-black/20"><div className="flex justify-center mb-6"><div className="bg-white/10 backdrop-blur rounded-full p-1 border border-white/20"><button onClick={() => setActiveTab("neumaticos")} className={`px-6 py-2 text-sm font-medium rounded-full transition-all duration-200 ${activeTab === "neumaticos" ? "bg-white text-gray-900 shadow-lg" : "text-white hover:text-yellow-300"}`}>NEUMÁTICOS</button><button onClick={() => setActiveTab("llantas")} className={`px-6 py-2 text-sm font-medium rounded-full transition-all duration-200 ${activeTab === "llantas" ? "bg-white text-gray-900 shadow-lg" : "text-white hover:text-yellow-300"}`}>LLANTAS</button></div></div><div key={activeTab} className="animate-fadeIn space-y-4">{activeTab === "neumaticos" && (<>{/* Filtro minimalista y elegante */}
 <div className="text-center mb-4">
   <p className="text-sm text-gray-300 mb-3">Encontrá tu medida perfecta</p>
   <div className="flex flex-wrap justify-center gap-2 mb-3">
@@ -900,13 +900,12 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
             </div>
           </div>
           
-          {/* Texto principal con tipografía gótica */}
+          {/* Texto principal con tipografía gótica y brillo sutil */}
           <h1 
-            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-wider text-center mb-2 md:mb-3"
+            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-wider text-center mb-2 md:mb-3 animate-text-glow"
             style={{ 
               fontFamily: "'Cinzel', 'Times New Roman', serif",
-              letterSpacing: '0.1em',
-              textShadow: '3px 3px 6px rgba(0,0,0,0.9)'
+              letterSpacing: '0.1em'
             }}
           >
             <span 

@@ -499,3 +499,22 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.8s ease-out forwards;
 }
+
+/* Animación de brillo sutil para las letras */
+@keyframes text-glow {
+  0%, 100% {
+    text-shadow: 
+      3px 3px 6px rgba(0,0,0,0.9),
+      0 0 5px rgba(220,38,38,0.3);
+  }
+  50% {
+    text-shadow: 
+      3px 3px 6px rgba(0,0,0,0.9),
+      0 0 15px rgba(220,38,38,0.6),
+      0 0 25px rgba(220,38,38,0.4);
+  }
+}
+
+.animate-text-glow {
+  animation: text-glow 3s ease-in-out infinite;
+}
