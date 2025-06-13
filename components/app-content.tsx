@@ -883,95 +883,36 @@ interface HeroSectionProps {
 function HeroSection({ handleSearch }: HeroSectionProps) { 
   return (
     <div className="relative overflow-hidden min-h-[85vh] md:min-h-[90vh] flex items-center text-white mb-12">
-      {/* Fondo minimalista y elegante */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-slate-800 to-black z-0"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-1"></div>
-      
-      {/* Imagen de fondo sutil */}
-      <div 
-        className="absolute inset-0 bg-center bg-cover z-2" 
-        style={{ 
-          backgroundImage: "url('https://res.cloudinary.com/dt5pkdr0k/image/upload/v1745032889/image_fx_55_ymeuvt.png')", 
-          opacity: 0.15,
-          filter: 'contrast(1.1) brightness(0.8)'
-        }}
-      >
-      </div>
-      
-      {/* Acento sutil de marca */}
-      <div className="absolute inset-0 z-3" style={{
-        background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, transparent 40%, transparent 60%, rgba(220, 38, 38, 0.05) 100%)',
-      }}></div>
-      
-      {/* Elementos geométricos minimalistas */}
-      <div className="absolute inset-0 z-4">
-        {/* Círculos sutiles que simulan neumáticos */}
-        <div className="absolute top-16 right-24 w-24 h-24 border border-white/10 rounded-full animate-spin-slow opacity-20"></div>
-        <div className="absolute bottom-24 left-20 w-16 h-16 border border-white/8 rounded-full animate-spin-reverse opacity-15"></div>
-        
-        {/* Líneas sutiles de diseño */}
-        <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/8 to-transparent opacity-30"></div>
-        <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-transparent via-red-300/6 to-transparent opacity-25"></div>
-      </div>
-      
-      {/* Elementos Argentinos Sutiles */}
-      <div className="absolute inset-0 z-5">
-        {/* Sol de Mayo discreto */}
-        <div className="absolute top-8 right-8 opacity-15">
-          <SolDeMayo className="text-yellow-300/60" size={32} />
-        </div>
-        
-        {/* Partículas sutiles y minimalistas */}
-        <div className="floating-particle absolute top-24 left-12 w-2 h-2 bg-white/20 rounded-full opacity-40 animate-float-1"></div>
-        <div className="floating-particle absolute top-48 right-24 w-1 h-1 bg-white/30 rounded-full opacity-50 animate-float-2"></div>
-        <div className="floating-particle absolute bottom-36 left-1/4 w-1 h-1 bg-red-300/20 rounded-full opacity-30 animate-float-3"></div>
-        <div className="floating-particle absolute top-64 right-1/3 w-2 h-2 bg-white/15 rounded-full opacity-35 animate-float-1"></div>
-        <div className="floating-particle absolute bottom-28 right-16 w-1 h-1 bg-white/25 rounded-full opacity-40 animate-float-2"></div>
-        
-        {/* Sol de Mayo adicional con rotación */}
-        <div className="absolute bottom-10 left-10 opacity-15 animate-spin-slow">
-          <SolDeMayo className="text-yellow-200" size={28} />
-        </div>
-        
-        {/* Elementos adicionales de marca */}
-        <div className="absolute top-1/3 left-8 opacity-10">
-          <div className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center">
-            <div className="w-6 h-6 bg-white rounded-full"></div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Overlay con gradiente para mejor legibilidad */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50 z-5"></div>
+      {/* Fondo negro liso como pidió el cliente */}
+      <div className="absolute inset-0 bg-black z-0"></div>
       <div className="container mx-auto px-4 lg:px-6 py-8 md:py-12 text-center relative z-10 flex flex-col justify-center min-h-full">
         {/* Título principal con tipografía irlandesa elegante y profesional */}
         <div className="flex-shrink-0 mb-4 md:mb-6">
-          {/* Badge del 30° Aniversario elegante y dorado */}
+          {/* Badge del 30° Aniversario dorado */}
           <div className="flex justify-center mb-3 md:mb-4">
             <div 
-              className="relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider shadow-lg border border-yellow-400/50"
+              className="relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider"
               style={{ 
-                fontFamily: 'var(--font-anniversary-elegant)',
-                boxShadow: '0 0 20px rgba(255,215,0,0.4)'
+                boxShadow: '0 0 20px rgba(255,215,0,0.6)'
               }}
             >
               <span className="relative">✨ 30° ANIVERSARIO ✨</span>
             </div>
           </div>
           
-          {/* Texto principal con tipografía irlandesa elegante */}
+          {/* Texto principal con tipografía gótica */}
           <h1 
-            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-wider text-center mb-2 md:mb-3"
+            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-wider text-center mb-2 md:mb-3"
             style={{ 
-              fontFamily: "'Irish Grover', cursive, var(--font-anniversary-title)",
-              letterSpacing: '0.05em',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+              fontFamily: "'Cinzel', 'Times New Roman', serif",
+              letterSpacing: '0.1em',
+              textShadow: '3px 3px 6px rgba(0,0,0,0.9)'
             }}
           >
             <span 
               className="text-red-500 drop-shadow-lg"
               style={{ 
-                filter: 'drop-shadow(0 0 8px rgba(220,38,38,0.3))'
+                filter: 'drop-shadow(0 0 12px rgba(220,38,38,0.5))'
               }}
             >
               JCS
@@ -980,31 +921,31 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
               EL
             </span>
             <span 
-              className="text-white drop-shadow-lg"
+              className="text-red-500 drop-shadow-lg"
+              style={{ 
+                filter: 'drop-shadow(0 0 12px rgba(220,38,38,0.5))'
+              }}
             >
               GUARDIÁN
             </span>
           </h1>
           
-
-          
-          {/* Línea decorativa elegante */}
+          {/* Línea decorativa roja */}
           <div className="flex justify-center mt-2 md:mt-3">
-            <div className="w-24 sm:w-32 md:w-48 h-0.5 bg-gradient-to-r from-transparent via-red-400 to-transparent opacity-90 shadow-lg"></div>
+            <div className="w-24 sm:w-32 md:w-48 h-0.5 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-90" style={{ boxShadow: '0 0 10px rgba(220,38,38,0.6)' }}></div>
           </div>
         </div>
         
-        {/* Subtítulo con estilo elegante y toque argentino */}
+        {/* Subtítulo elegante en rojo y blanco */}
         <p 
-          className="text-base md:text-lg lg:text-xl text-gray-100 mb-4 md:mb-6 max-w-3xl mx-auto drop-shadow-lg font-medium tracking-wide flex-shrink-0"
+          className="text-base md:text-lg lg:text-xl text-white mb-4 md:mb-6 max-w-3xl mx-auto drop-shadow-lg font-medium tracking-wide flex-shrink-0"
           style={{ 
-            fontFamily: 'var(--font-anniversary-elegant)',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.6)'
+            textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
           }}
         >
           Las mejores marcas en Neumáticos y Llantas. 
           <span className="text-gray-200 font-semibold"> Servicios de </span>
-          <span className="text-blue-200 font-bold">Calidad Nacional</span>
+          <span className="text-red-400 font-bold">Calidad Nacional</span>
           <span className="text-gray-200 font-semibold"> y Confianza.</span>
         </p>
         
