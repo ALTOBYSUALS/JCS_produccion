@@ -943,94 +943,65 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
       {/* Overlay con gradiente para mejor legibilidad */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50 z-5"></div>
       <div className="container mx-auto px-4 lg:px-6 py-8 md:py-12 text-center relative z-10 flex flex-col justify-center min-h-full">
-        {/* Título principal con tipografía dorada del 30° aniversario */}
+        {/* Título principal con tipografía irlandesa elegante y profesional */}
         <div className="flex-shrink-0 mb-4 md:mb-6">
-          {/* Badge del 30° Aniversario con efecto llamativo */}
-          <div className="flex justify-center mb-2 md:mb-3">
+          {/* Badge del 30° Aniversario con efecto más sutil */}
+          <div className="flex justify-center mb-3 md:mb-4">
             <div 
-              className="relative bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider shadow-lg animate-pulse"
+              className="relative bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 text-white px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider shadow-lg border border-gray-500/50"
               style={{ fontFamily: 'var(--font-anniversary-elegant)' }}
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full blur-md opacity-75 animate-pulse"></span>
               <span className="relative">✨ 30° ANIVERSARIO ✨</span>
             </div>
           </div>
           
-          {/* Texto principal con efecto más llamativo y color rojo de marca */}
+          {/* Texto principal con tipografía irlandesa elegante */}
           <h1 
-            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-wider text-center anniversary-title mb-2 md:mb-3"
+            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-wider text-center mb-2 md:mb-3"
             style={{ 
-              fontFamily: 'var(--font-anniversary-title)',
-              letterSpacing: '0.1em',
-              textShadow: '4px 4px 12px rgba(0,0,0,0.9), 0 0 30px rgba(220,38,38,0.6), 0 0 60px rgba(212,175,55,0.4)',
-              animation: 'glow 2s ease-in-out infinite alternate'
+              fontFamily: "'Irish Grover', cursive, var(--font-anniversary-title)",
+              letterSpacing: '0.05em',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
             }}
           >
             <span 
-              className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-2xl"
+              className="text-red-500 drop-shadow-lg"
               style={{ 
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 20px rgba(220,38,38,0.5))'
+                filter: 'drop-shadow(0 0 8px rgba(220,38,38,0.3))'
               }}
             >
               JCS
             </span>
-            <span className="mx-1 md:mx-2 text-emerald-400 text-2xl sm:text-3xl md:text-4xl animate-pulse drop-shadow-lg">☘</span>
-            <span 
-              className="bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-2xl"
-              style={{ 
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.5))'
-              }}
-            >
+            <span className="mx-2 md:mx-3 text-white drop-shadow-lg">
               EL
             </span>
-            <span className="mx-1 md:mx-2 text-red-500 text-2xl sm:text-3xl md:text-4xl animate-pulse drop-shadow-lg">◆</span>
             <span 
-              className="bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-2xl"
-              style={{ 
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.5))'
-              }}
+              className="text-white drop-shadow-lg"
             >
               GUARDIÁN
             </span>
           </h1>
           
-          {/* Subtítulo del aniversario con toque argentino */}
-          <div 
-            className="text-sm md:text-base lg:text-lg text-yellow-300 font-semibold text-center mt-1 md:mt-2 tracking-wide"
-            style={{ fontFamily: 'var(--font-anniversary-elegant)' }}
-          >
-            Tres décadas de excelencia y confianza
-          </div>
+
           
-          {/* Referencia a San Justo - Sutil */}
-          <div className="text-xs md:text-sm text-blue-200 font-medium text-center mt-1 opacity-80">
-            🇦🇷 Desde San Justo, Buenos Aires
-          </div>
-          
-          {/* Línea decorativa dorada */}
+          {/* Línea decorativa elegante */}
           <div className="flex justify-center mt-2 md:mt-3">
-            <div className="w-24 sm:w-32 md:w-48 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-90 shadow-lg"></div>
+            <div className="w-24 sm:w-32 md:w-48 h-0.5 bg-gradient-to-r from-transparent via-red-400 to-transparent opacity-90 shadow-lg"></div>
           </div>
         </div>
         
-        {/* Subtítulo con estilo dorado elegante y toque argentino */}
+        {/* Subtítulo con estilo elegante y toque argentino */}
         <p 
-          className="text-base md:text-lg lg:text-xl text-yellow-100 mb-4 md:mb-6 max-w-3xl mx-auto drop-shadow-lg font-medium tracking-wide flex-shrink-0"
+          className="text-base md:text-lg lg:text-xl text-gray-100 mb-4 md:mb-6 max-w-3xl mx-auto drop-shadow-lg font-medium tracking-wide flex-shrink-0"
           style={{ 
             fontFamily: 'var(--font-anniversary-elegant)',
             textShadow: '2px 2px 4px rgba(0,0,0,0.6)'
           }}
         >
           Las mejores marcas en Neumáticos y Llantas. 
-          <span className="text-yellow-300 font-semibold"> Servicios de </span>
+          <span className="text-gray-200 font-semibold"> Servicios de </span>
           <span className="text-blue-200 font-bold">Calidad Nacional</span>
-          <span className="text-yellow-300 font-semibold"> y Confianza.</span>
+          <span className="text-gray-200 font-semibold"> y Confianza.</span>
         </p>
         
         {/* Filtro de búsqueda - Posicionado para estar siempre visible */}

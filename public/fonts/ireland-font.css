@@ -12,6 +12,9 @@
 /* Uncial Antiqua - Fuente irlandesa auténtica (respaldo) */
 @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
 
+/* Irish Grover - Fuente irlandesa profesional y elegante */
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
+
 /* Fuente alternativa irlandesa usando Cinzel como base */
 @font-face {
   font-family: 'Ireland Celtic';
@@ -53,9 +56,9 @@
 
 /* Variables CSS para fácil uso - Edición 30° Aniversario */
 :root {
-  --font-anniversary-title: 'Cinzel Decorative', 'Playfair Display', serif;
+  --font-anniversary-title: 'Irish Grover', 'Cinzel Decorative', 'Playfair Display', serif;
   --font-anniversary-elegant: 'Cormorant Garamond', 'Playfair Display', serif;
-  --font-ireland-celtic: 'Uncial Antiqua', 'Ireland Celtic', 'Cinzel', serif;
+  --font-ireland-celtic: 'Irish Grover', 'Uncial Antiqua', 'Ireland Celtic', 'Cinzel', serif;
   --font-ireland-bold: 'Ireland Bold', 'Pirata One', cursive;
   --font-celtic-traditional: 'Celtic Traditional', 'IM Fell English', serif;
   
