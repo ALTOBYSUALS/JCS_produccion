@@ -2115,6 +2115,8 @@ function CategoryPage({
   // Nuevos estados para los filtros de chips
   const [selectedBrands, setSelectedBrands] = useState<string[]>(initialBrandFilter ? [initialBrandFilter] : []);
   const [selectedRodados, setSelectedRodados] = useState<number[]>([]);
+  // Nuevo estado para búsqueda por nombre
+  const [searchQuery, setSearchQuery] = useState("");
   // Siempre usar filtros visuales para llantas
   const useVisualFilters = category === 'llanta';
 
@@ -2228,13 +2230,24 @@ function CategoryPage({
         }
     }
 
-    // 3. Filtro de marca
+    // 3. Filtro de búsqueda por nombre
+    if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        results = results.filter(p => {
+            if (!p) return false;
+            const name = p.name?.toLowerCase() || "";
+            const description = p.description?.toLowerCase() || "";
+            return name.includes(query) || description.includes(query);
+        });
+    }
+
+    // 4. Filtro de marca
     const activeBrandFilter = selectedBrand || initialBrandFilter;
     if (activeBrandFilter) {
         results = results.filter(p => { if(!p) return false; const productBrand = getProductBrand(p); return productBrand?.toLowerCase() === activeBrandFilter.toLowerCase(); });
     }
 
-    // 4. Filtro de precio
+    // 5. Filtro de precio
     if (selectedPriceRange) {
         const [minStr, maxStr] = selectedPriceRange.split('-');
         const minPrice = parseInt(minStr);
@@ -2242,7 +2255,7 @@ function CategoryPage({
         results = results.filter(p => { if (!p || typeof p.price !== 'number' || p.price <= 0) return false; return p.price >= minPrice && p.price <= maxPrice; });
     }
 
-    // 3. Filtros visuales (chips)
+    // 6. Filtros visuales (chips)
     if (useVisualFilters) {
         // Filtro de marcas (visual)
         if (selectedBrands.length > 0) {
@@ -2262,7 +2275,7 @@ function CategoryPage({
     }
 
     return results;
-  }, [products, category, currentFilters, filterType, selectedBrand, selectedPriceRange, initialBrandFilter, useVisualFilters, selectedBrands, selectedRodados]);
+  }, [products, category, currentFilters, filterType, searchQuery, selectedBrand, selectedPriceRange, initialBrandFilter, useVisualFilters, selectedBrands, selectedRodados]);
 
   const handleProductSelect = (product: Product) => { setView("productDetail", { product: product }); };
   const handleBrandChange = (e: ChangeEvent<HTMLSelectElement>) => { setSelectedBrand(e.target.value); };
@@ -2346,12 +2359,13 @@ function CategoryPage({
                 </div>
                 
                 {/* Filtros activos */}
-                {(selectedBrand || selectedPriceRange || selectedBrands.length > 0 || selectedRodados.length > 0) && (
+                {(searchQuery || selectedBrand || selectedPriceRange || selectedBrands.length > 0 || selectedRodados.length > 0) && (
                   <div className="p-4 bg-red-50 border-b border-red-100">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-red-800">Filtros activos</span>
                       <button
                         onClick={() => {
+                          setSearchQuery("");
                           setSelectedBrand("");
                           setSelectedPriceRange("");
                           setSelectedBrands([]);
@@ -2363,6 +2377,14 @@ function CategoryPage({
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-1">
+                      {searchQuery && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
+                          Búsqueda: "{searchQuery}"
+                          <button onClick={() => setSearchQuery("")} className="hover:bg-red-200 rounded-full p-0.5">
+                            <XMarkIcon />
+                          </button>
+                        </span>
+                      )}
                       {selectedBrand && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
                           {selectedBrand}
@@ -2398,6 +2420,43 @@ function CategoryPage({
                     </div>
                   </div>
                 )}
+                
+                {/* Búsqueda por nombre */}
+                <div className="p-6 border-b border-gray-100">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <SearchIcon />
+                    </div>
+                    <h4 className="font-semibold text-gray-800">Buscar</h4>
+                  </div>
+                  
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder={`Buscar ${categoryLabel.toLowerCase()}...`}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 text-sm bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <SearchIcon />
+                    </div>
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery("")}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                      >
+                        <XMarkIcon />
+                      </button>
+                    )}
+                  </div>
+                  
+                  {searchQuery && (
+                    <div className="mt-3 text-xs text-gray-500">
+                      Buscando: "{searchQuery}"
+                    </div>
+                  )}
+                </div>
                 
                 {/* Filtro de marca */}
                 <div className="p-6 border-b border-gray-100">
@@ -2541,6 +2600,7 @@ function CategoryPage({
                   <p className="text-gray-500 mb-4">No se encontraron productos con los filtros seleccionados.</p>
                   <button 
                     onClick={() => {
+                      setSearchQuery('');
                       setSelectedBrands([]);
                       setSelectedRodados([]);
                       setSelectedPriceRange('');
