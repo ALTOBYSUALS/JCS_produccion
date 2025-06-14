@@ -896,58 +896,49 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      <div className="container mx-auto px-4 lg:px-6 py-8 md:py-12 relative z-10 flex items-center min-h-screen">
-        <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between">
+      <div className="container mx-auto px-4 lg:px-6 py-8 md:py-12 relative z-10 flex items-center justify-center min-h-screen">
+        <div className="w-full max-w-4xl mx-auto text-center">
           
-          {/* Contenido izquierdo - Título y formulario */}
-          <div className="w-full lg:w-1/2 text-center lg:text-left mb-8 lg:mb-0">
-            
-            {/* Badge del 30° Aniversario dorado */}
-            <div className="flex justify-center lg:justify-start mb-4">
-              <div 
-                className="relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider"
-                style={{ 
-                  boxShadow: '0 0 20px rgba(255,215,0,0.6)'
-                }}
-              >
-                <span className="relative">✨ 30° ANIVERSARIO ✨</span>
-              </div>
-            </div>
-            
-            {/* Título principal con tipografía gótica y brillo dorado */}
-            <h1 
-              className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-wider mb-4"
+          {/* Badge del 30° Aniversario dorado */}
+          <div className="flex justify-center mb-4">
+            <div 
+              className="relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider"
               style={{ 
-                fontFamily: "'Cinzel', 'Times New Roman', serif",
-                letterSpacing: '0.1em',
-                color: '#D4AF37', // Dorado
-                textShadow: '0 0 30px rgba(212,175,55,0.8), 0 0 60px rgba(212,175,55,0.4), 2px 2px 4px rgba(0,0,0,0.8)'
+                boxShadow: '0 0 20px rgba(255,215,0,0.6)'
               }}
             >
-              JCS EL GUARDIÁN
-            </h1>
-            
-            {/* Subtítulo elegante */}
-            <p 
-              className="text-lg md:text-xl lg:text-2xl text-white mb-6 max-w-2xl mx-auto lg:mx-0 font-medium tracking-wide"
-              style={{ 
-                textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
-              }}
-            >
-              Las mejores marcas en Neumáticos y Llantas. 
-              <span className="text-red-400 font-bold"> Servicios de Calidad Nacional</span>
-              <span className="text-gray-200"> y Confianza.</span>
-            </p>
-            
-            {/* Formulario de búsqueda mejorado */}
-            <div className="max-w-md mx-auto lg:mx-0">
-              <CustomHeroSearch onSearch={handleSearch} />
+              <span className="relative">✨ 30° ANIVERSARIO ✨</span>
             </div>
           </div>
           
-          {/* Espacio derecho para el guerrero (la imagen de fondo se encarga de esto) */}
-          <div className="hidden lg:block lg:w-1/2">
-            {/* Este espacio se deja intencionalmente vacío para que la imagen de fondo del guerrero sea visible */}
+          {/* Título principal con tipografía gótica y brillo dorado */}
+          <h1 
+            className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-wider mb-4"
+            style={{ 
+              fontFamily: "'Cinzel', 'Times New Roman', serif",
+              letterSpacing: '0.1em',
+              color: '#D4AF37', // Dorado
+              textShadow: '0 0 30px rgba(212,175,55,0.8), 0 0 60px rgba(212,175,55,0.4), 2px 2px 4px rgba(0,0,0,0.8)'
+            }}
+          >
+            JCS EL GUARDIÁN
+          </h1>
+          
+          {/* Subtítulo elegante */}
+          <p 
+            className="text-lg md:text-xl lg:text-2xl text-white mb-8 max-w-3xl mx-auto font-medium tracking-wide"
+            style={{ 
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+            }}
+          >
+            Las mejores marcas en Neumáticos y Llantas. 
+            <span className="text-red-400 font-bold"> Servicios de Calidad Nacional</span>
+            <span className="text-gray-200"> y Confianza.</span>
+          </p>
+          
+          {/* Formulario de búsqueda centrado */}
+          <div className="max-w-lg mx-auto">
+            <CustomHeroSearch onSearch={handleSearch} />
           </div>
         </div>
       </div>
