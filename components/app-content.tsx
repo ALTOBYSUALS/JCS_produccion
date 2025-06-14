@@ -897,10 +897,10 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
       </div>
 
       <div className="container mx-auto px-4 lg:px-6 py-8 md:py-12 relative z-10 flex items-center justify-center min-h-screen">
-        <div className="w-full max-w-4xl mx-auto text-center">
+        <div className="w-full max-w-4xl mx-auto text-center -mt-16 md:-mt-20">
           
           {/* Badge del 30° Aniversario dorado */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-6">
             <div 
               className="relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-bold tracking-wider"
               style={{ 
@@ -913,12 +913,12 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
           
           {/* Título principal con tipografía gótica y brillo dorado */}
           <h1 
-            className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-wider mb-4"
+            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider mb-6 animate-golden-title-glow"
             style={{ 
               fontFamily: "'Cinzel', 'Times New Roman', serif",
-              letterSpacing: '0.1em',
+              letterSpacing: '0.15em',
               color: '#D4AF37', // Dorado
-              textShadow: '0 0 30px rgba(212,175,55,0.8), 0 0 60px rgba(212,175,55,0.4), 2px 2px 4px rgba(0,0,0,0.8)'
+              lineHeight: '1.1'
             }}
           >
             JCS EL GUARDIÁN
@@ -926,9 +926,10 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
           
           {/* Subtítulo elegante */}
           <p 
-            className="text-lg md:text-xl lg:text-2xl text-white mb-8 max-w-3xl mx-auto font-medium tracking-wide"
+            className="text-base md:text-lg lg:text-xl text-white mb-10 max-w-3xl mx-auto font-medium tracking-wide"
             style={{ 
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              lineHeight: '1.4'
             }}
           >
             Las mejores marcas en Neumáticos y Llantas. 
