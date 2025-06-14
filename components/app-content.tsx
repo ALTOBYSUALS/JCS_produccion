@@ -900,29 +900,36 @@ function HeroSection({ handleSearch }: HeroSectionProps) {
             </div>
           </div>
           
-          {/* Texto principal con tipografía gótica y brillo sutil */}
+          {/* Texto principal con tipografía gótica y brillo sutil animado */}
           <h1 
-            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-wider text-center mb-2 md:mb-3 animate-text-glow"
+            className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-wider text-center mb-2 md:mb-3"
             style={{ 
               fontFamily: "'Cinzel', 'Times New Roman', serif",
               letterSpacing: '0.1em'
             }}
           >
             <span 
-              className="text-red-500 drop-shadow-lg"
+              className="text-red-500 drop-shadow-lg animate-text-glow"
               style={{ 
-                filter: 'drop-shadow(0 0 12px rgba(220,38,38,0.5))'
+                filter: 'drop-shadow(0 0 12px rgba(220,38,38,0.5))',
+                textShadow: '0 0 20px rgba(220,38,38,0.6), 0 0 40px rgba(220,38,38,0.3)'
               }}
             >
               JCS
             </span>
-            <span className="mx-2 md:mx-3 text-white drop-shadow-lg">
+            <span 
+              className="mx-2 md:mx-3 text-white drop-shadow-lg animate-text-glow"
+              style={{ 
+                textShadow: '0 0 15px rgba(255,255,255,0.5), 0 0 30px rgba(255,255,255,0.3)'
+              }}
+            >
               EL
             </span>
             <span 
-              className="text-red-500 drop-shadow-lg"
+              className="text-red-500 drop-shadow-lg animate-text-glow"
               style={{ 
-                filter: 'drop-shadow(0 0 12px rgba(220,38,38,0.5))'
+                filter: 'drop-shadow(0 0 12px rgba(220,38,38,0.5))',
+                textShadow: '0 0 20px rgba(220,38,38,0.6), 0 0 40px rgba(220,38,38,0.3)'
               }}
             >
               GUARDIÁN
@@ -2927,26 +2934,26 @@ function ContactoPage() {
 function NosotrosPage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section minimalista */}
-      <div className="relative bg-gradient-to-br from-gray-50 to-white py-16 md:py-24">
-        {/* Sol de Mayo sutil */}
-        <div className="absolute top-8 right-8 opacity-10">
-          <SolDeMayo className="text-gray-400" size={32} />
+      {/* Hero Section minimalista con colores del brand */}
+      <div className="relative bg-gradient-to-br from-black via-gray-900 to-black py-16 md:py-24">
+        {/* Sol de Mayo sutil en rojo */}
+        <div className="absolute top-8 right-8 opacity-20">
+          <SolDeMayo className="text-red-500" size={32} />
         </div>
         
         <div className="container mx-auto px-4 lg:px-6 text-center">
-          {/* Badge del 30° aniversario simple */}
+          {/* Badge del 30° aniversario en dorado */}
           <div className="flex justify-center mb-6">
-            <div className="bg-gray-900 text-white px-6 py-2 rounded-full text-sm font-semibold">
-              30 años de trayectoria
+            <div className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black px-6 py-2 rounded-full text-sm font-bold tracking-wider shadow-lg">
+              ✨ 30 años de trayectoria ✨
             </div>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-red-500">
             NOSOTROS
           </h1>
           
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-white max-w-2xl mx-auto leading-relaxed">
             Conocé un poco más sobre JCS El Guardián
           </p>
         </div>
@@ -2958,17 +2965,17 @@ function NosotrosPage() {
         {/* ¿Por qué elegirnos? */}
         <div className="max-w-4xl mx-auto mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
               ¿Por qué elegirnos?
             </h2>
-            <div className="w-16 h-1 bg-gray-900 mx-auto"></div>
+            <div className="w-16 h-1 bg-red-500 mx-auto"></div>
           </div>
           
-          <div className="bg-gray-50 p-8 md:p-12 rounded-lg">
+          <div className="bg-gray-50 border-l-4 border-red-500 p-8 md:p-12 rounded-lg shadow-sm">
             <p className="text-gray-700 text-lg leading-relaxed text-center mb-6">
               Contamos con un equipo altamente calificado, cuya experiencia y especialización se ha consolidado a lo largo de estos años en el rubro.
             </p>
-            <p className="text-gray-900 text-lg leading-relaxed text-center font-semibold">
+            <p className="text-black text-lg leading-relaxed text-center font-semibold">
               Nuestro propósito es asegurar la satisfacción y tranquilidad de nuestros clientes.
             </p>
           </div>
@@ -2977,17 +2984,17 @@ function NosotrosPage() {
         {/* Equipo JCS */}
         <div className="max-w-4xl mx-auto mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
               Equipo JCS
             </h2>
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            <h3 className="text-xl font-semibold text-red-600 mb-4">
               Conocé a nuestro equipo
             </h3>
-            <div className="w-16 h-1 bg-gray-900 mx-auto"></div>
+            <div className="w-16 h-1 bg-red-500 mx-auto"></div>
           </div>
           
-          <div className="bg-gray-50 p-8 md:p-12 rounded-lg text-center">
-            <p className="text-gray-700 text-lg leading-relaxed font-semibold">
+          <div className="bg-black text-white p-8 md:p-12 rounded-lg text-center shadow-lg">
+            <p className="text-white text-lg leading-relaxed font-semibold">
               Acompañamos a nuestros clientes en cada kilómetro.
             </p>
           </div>
@@ -2996,38 +3003,38 @@ function NosotrosPage() {
         {/* Nuestros valores */}
         <div className="max-w-6xl mx-auto mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
               Nuestros valores
             </h2>
-            <div className="w-16 h-1 bg-gray-900 mx-auto"></div>
+            <div className="w-16 h-1 bg-red-500 mx-auto"></div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6 hover:bg-gray-50 rounded-lg transition-colors duration-300">
-              <div className="w-16 h-16 bg-gray-900 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 hover:bg-gray-50 rounded-lg transition-colors duration-300 border border-gray-200">
+              <div className="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <ClockIcon className="w-8 h-8" />
               </div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3">Rapidez</h3>
+              <h3 className="font-bold text-xl text-black mb-3">Rapidez</h3>
               <p className="text-gray-600 leading-relaxed">
                 Atención ágil y eficiente para que no pierdas tiempo
               </p>
             </div>
             
-            <div className="text-center p-6 hover:bg-gray-50 rounded-lg transition-colors duration-300">
-              <div className="w-16 h-16 bg-gray-900 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 hover:bg-gray-50 rounded-lg transition-colors duration-300 border border-gray-200">
+              <div className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <ShieldCheckIcon className="w-8 h-8" />
               </div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3">Calidad</h3>
+              <h3 className="font-bold text-xl text-black mb-3">Calidad</h3>
               <p className="text-gray-600 leading-relaxed">
                 Productos y servicios de primera línea
               </p>
             </div>
             
-            <div className="text-center p-6 hover:bg-gray-50 rounded-lg transition-colors duration-300">
-              <div className="w-16 h-16 bg-gray-900 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 hover:bg-gray-50 rounded-lg transition-colors duration-300 border border-gray-200">
+              <div className="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <TruckIcon className="w-8 h-8" />
               </div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3">Confianza</h3>
+              <h3 className="font-bold text-xl text-black mb-3">Confianza</h3>
               <p className="text-gray-600 leading-relaxed">
                 30 años de respaldo y experiencia en el rubro
               </p>
@@ -3035,23 +3042,23 @@ function NosotrosPage() {
           </div>
         </div>
 
-        {/* Call to Action simple */}
+        {/* Call to Action con colores del brand */}
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
               ¿Cómo podemos ayudarte?
             </h2>
-            <div className="w-16 h-1 bg-gray-900 mx-auto mb-6"></div>
+            <div className="w-16 h-1 bg-red-500 mx-auto mb-6"></div>
           </div>
           
-          <div className="bg-gray-50 p-8 md:p-12 rounded-lg text-center">
-            <p className="text-gray-700 text-lg leading-relaxed mb-8">
+          <div className="bg-black text-white p-8 md:p-12 rounded-lg text-center shadow-xl">
+            <p className="text-white text-lg leading-relaxed mb-8">
               Tenemos personal de atención para proporcionarte toda la información necesaria.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
-                className="bg-gray-900 hover:bg-gray-800 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-300"
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-300 shadow-lg"
                 onClick={() => window.location.href = 'https://wa.me/5491144820369'}
               >
                 <WhatsAppIcon className="w-5 h-5 mr-2" />
@@ -3060,7 +3067,7 @@ function NosotrosPage() {
               
               <Button 
                 variant="outline"
-                className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300"
+                className="border-2 border-white text-white hover:bg-white hover:text-black font-semibold px-8 py-3 rounded-lg transition-all duration-300"
                 onClick={() => window.location.href = 'tel:44820369'}
               >
                 <PhoneIcon className="w-5 h-5 mr-2" />
@@ -3069,7 +3076,7 @@ function NosotrosPage() {
             </div>
             
             <div className="mt-8">
-              <p className="text-gray-600 font-semibold">
+              <p className="text-red-400 font-semibold">
                 Rapidez, Calidad y Confianza desde 1995
               </p>
             </div>
