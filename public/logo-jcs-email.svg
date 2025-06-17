@@ -1,0 +1,19 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo del logo -->
+  <rect width="200" height="60" fill="#ffffff" rx="8"/>
+  
+  <!-- Círculo decorativo -->
+  <circle cx="25" cy="30" r="18" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- Iniciales JCS -->
+  <text x="25" y="36" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">JCS</text>
+  
+  <!-- Texto principal -->
+  <text x="50" y="22" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1f2937">JCS El Guardián</text>
+  
+  <!-- Subtítulo -->
+  <text x="50" y="38" font-family="Arial, sans-serif" font-size="10" fill="#6b7280">Neumáticos • Llantas • Servicios</text>
+  
+  <!-- Decoración -->
+  <rect x="50" y="42" width="120" height="2" fill="#dc2626" rx="1"/>
+</svg> 

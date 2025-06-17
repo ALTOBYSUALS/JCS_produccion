@@ -17,6 +17,7 @@ import { generateTrackingUrl, generateTrackingToken } from "@/lib/utils"
 import { MercadoPagoLoading } from "./mercadopago-loading"
 import { initMercadoPago, CardPayment } from '@mercadopago/sdk-react'
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { PAYMENT_CONFIG } from "@/lib/payment-config"
 
 // Define CartItem interface locally
 interface CartItem {
@@ -519,8 +520,8 @@ export function CheckoutForm({
         setManualPaymentInfo({
           metodo: data.metodoPago,
           instrucciones: data.metodoPago === 'efectivo' 
-            ? 'Por favor, dirígete al local para abonar y retirar tu pedido. ¡Gracias!' 
-            : 'Te enviaremos los datos bancarios por email para completar la transferencia. Revisa tu correo (incluida la carpeta de spam). ¡Gracias!'
+            ? PAYMENT_CONFIG.confirmaciones.efectivo
+            : PAYMENT_CONFIG.confirmaciones.transferencia
         });
         setCheckoutStatus("success");
         clearCart();
